@@ -1,0 +1,5 @@
+RewriteEngine On
+RewriteBase /
+
+RewriteRule ^product/?$ product.php [L]
+RewriteRule ^category/?$ category.php [L]
