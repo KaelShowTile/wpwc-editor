@@ -1,5 +1,9 @@
-RewriteEngine On
-RewriteBase /
+<Files "config.php">
+    Require all denied
+</Files>
 
-RewriteRule ^product/?$ product.php [L]
-RewriteRule ^category/?$ category.php [L]
+RewriteEngine On
+RewriteBase /wpwc-editor/
+
+# Map /products to products.php
+RewriteRule ^products/?$ products.php [L]
