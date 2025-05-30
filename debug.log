@@ -1,0 +1,40 @@
+[2025-05-30 08:27:42] start saving attribute!
+[2025-05-30 08:29:16] start saving attribute!
+[2025-05-30 08:29:16] loaded config
+[2025-05-30 08:29:16] finish preparation
+[2025-05-30 08:30:32] start saving attribute!
+[2025-05-30 08:30:32] finish preparation
+[2025-05-30 08:30:32] finish inavtiving all!
+[2025-05-30 08:31:19] start saving attribute!
+[2025-05-30 08:31:19] finish inavtiving all!
+[2025-05-30 08:34:35] start saving attribute!
+[2025-05-30 08:34:35] finish inavtiving all!
+[2025-05-30 08:40:38] start saving attribute!
+[2025-05-30 08:40:38] finish inavtiving all!
+[2025-05-30 08:41:12] Session data: Array
+(
+    [wpe_authenticated] => 1
+    [wpe_user] => Array
+        (
+            [id] => 1
+            [name] => cheaptiles_admin_new
+        )
+
+    [wpe_created] => 1748587267
+)
+
+[2025-05-30 08:41:12] Session ID: 96ve7ootmqqg52vj881m2j85pe
+[2025-05-30 08:41:12] finish inavtiving all!
+[2025-05-30 08:44:28] Session data: Array
+(
+    [wpe_authenticated] => 1
+    [wpe_user] => Array
+        (
+            [id] => 1
+            [name] => cheaptiles_admin_new
+        )
+
+    [wpe_created] => 1748587267
+)
+
+[2025-05-30 08:44:28] Session ID: 96ve7ootmqqg52vj881m2j85pe

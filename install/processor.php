@@ -39,7 +39,6 @@ try {
         CREATE TABLE IF NOT EXISTS `{$config['db']['prefix']}attributes` (
             `id` INT AUTO_INCREMENT PRIMARY KEY,
             `attribute_id` VARCHAR(50) NOT NULL UNIQUE,
-            `attribute_name` VARCHAR(255) NOT NULL,
             `active_editing` TINYINT(1) DEFAULT 0,
             `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

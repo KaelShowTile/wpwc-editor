@@ -1,0 +1,41 @@
+/* general */
+h1,h2,h3,h4,h5,h6{font-family: "Roboto", sans-serif;font-weight: 600;}
+p,a,span,b,label,td,tr,th{font-family: "Work Sans", sans-serif;} 
+body{font-family: "Work Sans", sans-serif; font-size: 16px;}
+
+.hide-this-area{display: none !important;}
+
+.page-header-container{margin: 20px 0 40px;}
+.page-header-container h1{margin-bottom: 0;}
+
+/* header */
+header{display: inline-block; width: 100%; margin-bottom: 20px; background: #fafafa;}
+header .container{padding: 10px 0 15px;}
+header .logo-container{float: left;}
+header .logo-container img{max-width: 150px;}
+header nav{float: right;}
+header nav .menu-list{margin-bottom: 0;}
+header nav .menu-list .menu-item{list-style: none; display: inline-block; padding: 10px 20px 0;}
+header nav .menu-list .menu-item a{text-decoration: none; color:#333; transition: 0.5s;}
+header nav .menu-list .menu-item a:hover{color:#000;}
+
+
+/* attribute */
+.attribute-list-container input{font-size: 1.6rem;}
+.attribute-list-container .card{border-width: 0;}
+.attribute-intro-container .card.stats-card{flex-direction: row; align-items: center;}
+.attribute-intro-container .card.stats-card i.fas{margin-right: 10px;}
+.attribute-intro-container .card.stats-card .stats-number{font-size: 1.5rem; font-weight: 600; margin-right: 5px;}
+.attribute-intro-container .card.stats-card .stats-label{font-size: 1.5rem;}
+.attribute-list-container .action-bar{background: #f9f9f9; padding: 40px 25px 25px;}
+.attribute-list-container .action-bar .search-box input{font-size: 1rem; padding-left: 42px;}
+.attribute-list-container .action-bar .search-box .fa-search{position: absolute; font-size: 1.2rem; margin: 10px 0 0 15px; color: #333;}
+.attribute-list-container .accordion-button{background: #fafafa; padding: 20px 40px; border-radius: 0 !important;}
+.attribute-list-container .accordion-button.collapsed{border-bottom: 1px dashed #eee;}
+.attribute-list-container .accordion-button:not(.collapsed){box-shadow: none;}
+.attribute-list-container .accordion-collapse.collapse.show{border-bottom: 1px dashed #eee;}
+.attribute-list-container .list-group.list-group-flush{flex-direction: row; flex-wrap: wrap; background: #fafafa; padding: 10px 20px;}
+.attribute-list-container .term-item{width: 23%; margin: 10px 1%; padding: 20px 15px 15px; border: 1px solid #f3f3f3; border-radius: 3px; box-shadow: 1px 1px 10px 1px rgba(0, 0, 0, 0.035); background: #fff;}
+.attribute-list-container .term-item .form-check{padding-left: 3em;}
+.attribute-list-container .term-item .form-check .form-check-label{font-weight: 500; letter-spacing: -0.5px;}
+.attribute-list-container .term-item .form-check .form-check-label small.text-muted{font-size: 0.75rem; margin-top: -4px; color: #bbb ! IMPORTANT; font-weight: 300; letter-spacing: 0.5px;}
