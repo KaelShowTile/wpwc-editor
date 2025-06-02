@@ -25,9 +25,9 @@ try {
 
     // Create setting table
     $db->exec("
-         CREATE TABLE IF NOT EXISTS `{$config['db']['prefix']}settings` (
+         CREATE TABLE IF NOT EXISTS `{$prefix}settings` (
             `id` INT AUTO_INCREMENT PRIMARY KEY,
-            `setting_name` VARCHAR(255) NOT NULL UNIQUE,
+            `setting_name` VARCHAR(255) NOT NULL,
             `setting_value` TEXT,
             `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -36,7 +36,7 @@ try {
 
     // Create attribute table
      $db->exec("
-        CREATE TABLE IF NOT EXISTS `{$config['db']['prefix']}attributes` (
+        CREATE TABLE IF NOT EXISTS `{$prefix}attributes` (
             `id` INT AUTO_INCREMENT PRIMARY KEY,
             `attribute_id` VARCHAR(50) NOT NULL UNIQUE,
             `active_editing` TINYINT(1) DEFAULT 0,

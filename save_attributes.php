@@ -1,17 +1,14 @@
 <?php
+
 // save_attributes.php
 require_once __DIR__.'/functions.php';
 require_once __DIR__.'/includes/session_manager.php';
 wpe_start_session();
 
-wpe_log('Session data: ' . print_r($_SESSION, true));
-wpe_log('Session ID: ' . session_id());
-
 header('Content-Type: application/json');
 
 // Check authentication
 if (!isset($_SESSION['wpe_authenticated']) || $_SESSION['wpe_authenticated'] !== true) {
-    header('HTTP/1.1 401 Unauthorized');
     echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
     exit;
 }
@@ -20,81 +17,72 @@ if (!isset($_SESSION['wpe_authenticated']) || $_SESSION['wpe_authenticated'] !==
 $json = file_get_contents('php://input');
 $data = json_decode($json, true);
 
-if (!isset($data['terms']) || !is_array($data['terms'])) {
+if (!isset($data['terms']) || !is_array($data['terms']) || 
+    !isset($data['taxonomies']) || !is_array($data['taxonomies'])) {
     echo json_encode(['success' => false, 'message' => 'Invalid request data']);
     exit;
 }
 
 // Load configuration
-require_once __DIR__.'/includes/config.php';
 $config = require __DIR__.'/includes/config.php';
 
 try {
-    // Connect to database
+    // Connect to program's database
     $db = new PDO(
-        "mysql:host={$config['db']['host']};dbname={$config['db']['name']}",
+        "mysql:host={$config['db']['host']};dbname={$config['db']['name']};charset=utf8mb4",
         $config['db']['user'],
-        $config['db']['password']
+        $config['db']['password'],
+        [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_EMULATE_PREPARES => false
+        ]
     );
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    // Prepare statements
-    $updateStmt = $db->prepare("
-        UPDATE {$config['db']['prefix']}attributes 
-        SET active_editing = :active 
-        WHERE attribute_id = :attribute_id
+    // Start transaction
+    $db->beginTransaction();
+    
+    //Clear existing data
+    $db->exec("DELETE FROM ".$config['db']['prefix']."attributes");
+    $deleteSettings = $db->prepare("
+        DELETE FROM `{$config['db']['prefix']}settings` 
+        WHERE setting_name = :setting_name
+    ");
+    $deleteSettings->execute([':setting_name' => 'attribute']);
+    
+    //Insert selected attributes
+    $insertAttrStmt = $db->prepare("
+        INSERT INTO `{$config['db']['prefix']}attributes` 
+        (attribute_id, active_editing) 
+        VALUES (:attribute_id, 1)
     ");
 
-    $insertStmt = $db->prepare("
-        INSERT INTO {$config['db']['prefix']}attributes 
-        (attribute_id, attribute_name, active_editing) 
-        VALUES (:attribute_id, :attribute_name, 1)
-        ON DUPLICATE KEY UPDATE active_editing = VALUES(active_editing)
+    //Insert selected taxonomies
+    $insertTaxStmt = $db->prepare("
+        INSERT INTO `{$config['db']['prefix']}settings` 
+        (setting_name, setting_value) 
+        VALUES ('attribute', :taxonomy_slug)
     ");
-    
-    // First, set all attributes to inactive
-    $db->exec("UPDATE {$config['db']['prefix']}attributes SET active_editing = 0");
-    
-    // Now process the selected terms
+
     foreach ($data['terms'] as $termId) {
-        wpe_log('loop product...');
-        // Check if the term exists in our attributes table
-        $checkStmt = $db->prepare("
-            SELECT COUNT(*) 
-            FROM {$config['db']['prefix']}attributes 
-            WHERE attribute_id = :term_id
-        ");
-        $checkStmt->execute([':term_id' => $termId]);
-        $exists = $checkStmt->fetchColumn() > 0;
-        
-        if ($exists) {
-            // Update existing record
-            $updateStmt->execute([
-                ':active' => 1,
-                ':attribute_id' => $termId
-            ]);
-        } else {
-            // Get term name from WordPress database
-            $termStmt = $db->prepare("
-                SELECT name 
-                FROM {$config['db']['prefix']}terms 
-                WHERE term_id = :term_id
-            ");
-            $termStmt->execute([':term_id' => $termId]);
-            $termName = $termStmt->fetchColumn();
-            
-            if ($termName) {
-                // Insert new record
-                $insertStmt->execute([
-                    ':attribute_id' => $termId,
-                    ':attribute_name' => $termName
-                ]);
-            }
-        }
+        $insertAttrStmt->execute([':attribute_id' => (int)$termId]);
     }
     
+    foreach ($data['taxonomies'] as $taxonomy) {
+        $insertTaxStmt->execute([':taxonomy_slug' => $taxonomy]);
+    }
+
+    
+    // Commit transaction
+    $db->commit();
+    
     echo json_encode(['success' => true]);
+
 } catch (PDOException $e) {
+    // Rollback on error
+    if (isset($db) && $db->inTransaction()) {
+        $db->rollBack();
+    }
+    
     error_log('Database error in save_attributes.php: ' . $e->getMessage());
     echo json_encode([
         'success' => false, 

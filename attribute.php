@@ -1,10 +1,97 @@
 <?php 
 
+$pageTitle = "Attributes";
+
 require_once __DIR__.'/includes/header.php'; 
 require_once __DIR__.'/includes/config.php';
 require_once $config['wordpress']['path'].'/wp-load.php';
 
-// Connect to database
+function get_actived_attributes_taxonomy($db_host, $db_name, $db_prefix, $user, $password)
+{
+    $getAttributes = [];
+
+    try {
+        // Create PDO connection with proper error handling
+        $pdo = new PDO(
+            "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4", 
+            $user, 
+            $password,
+            [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES => false
+            ]
+        );
+        
+        $table = $db_prefix . 'settings';
+        
+        // Use prepared statement with parameter binding
+        $stmt = $pdo->prepare("
+            SELECT setting_value 
+            FROM `$table` 
+            WHERE setting_name = :setting_name
+        ");
+        
+        // Execute with bound parameter
+        $stmt->execute([':setting_name' => 'attribute']);
+        
+        // Fetch results
+        $getAttributes = $stmt->fetchAll(PDO::FETCH_COLUMN, 0); // Get first column as array
+        
+    } catch (PDOException $e) {
+        error_log('PDO Error: ' . $e->getMessage());
+    } catch (Exception $e) {
+        error_log('General Error: ' . $e->getMessage());
+    } finally {
+        // Clean up resources
+        $stmt = null;
+        $pdo = null;
+    }
+
+    return $getAttributes;
+}
+
+$savedTaxonomies = get_actived_attributes_taxonomy($config['db']['host'], $config['db']['name'], $config['db']['prefix'], $config['db']['user'], $config['db']['password']);
+
+function get_saved_product_attributes($db_host, $db_name, $db_prefix, $user, $password)
+{
+    $getAttributes = [];
+
+    try {
+        // Create PDO connection with proper error handling
+        $pdo = new PDO(
+            "mysql:host=$db_host;dbname=$db_name", 
+            $user, 
+            $password,
+            [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+            ]
+        );
+        
+        // Prepare and execute query
+        $stmt = $pdo->query("SELECT attribute_id FROM " . $db_prefix . "attributes");
+        
+        // Fetch results
+        $getAttributes = $stmt->fetchAll();
+        
+    } catch (PDOException $e) {
+        error_log('PDO Error: ' . $e->getMessage());
+    } catch (Exception $e) {
+        error_log('General Error: ' . $e->getMessage());
+    } finally {
+        // Clean up resources
+        $stmt = null;
+        $pdo = null;
+    }
+
+    return $getAttributes;
+}
+
+$savedAttributes = get_saved_product_attributes($config['db']['host'], $config['db']['name'], $config['db']['prefix'], $config['db']['user'], $config['db']['password']);
+
+
+// Connect to wp database
 $db_host = DB_HOST;
 $db_user = DB_USER;
 $db_pass = DB_PASSWORD;
@@ -55,7 +142,29 @@ function get_product_attributes($db, $db_prefix) {
 
 // Get attributes from database
 $attributes = get_product_attributes($db, $db_prefix);
+
+//check attribute ID
+function is_attribute_exists($id, $savedAttributes) {
+    foreach ($savedAttributes as $attribute) {
+        if ($attribute['attribute_id'] == $id) {
+            return true;
+        }
+    }
+    return false;
+}
+
+//check attribute ID
+function is_taxonomy_exists($slug, $savedTaxonomies) {
+    foreach ($savedTaxonomies as $taxonomy) {
+        if (htmlspecialchars($taxonomy) == $slug) {
+            return true;
+        }
+    }
+    return false;
+}
+
 ?>
+
 
 <div class="container">
 
@@ -66,9 +175,9 @@ $attributes = get_product_attributes($db, $db_prefix);
 
 </div>
 
-<div class="container attribute-list-container">
+<div class="container wpwc-list-container">
         <!-- Stats Section -->
-        <div class="row mb-4 attribute-intro-container">
+        <div class="row mb-4 wpwc-intro-container">
             <div class="col-md-3">
                 <div class="card stats-card">
                     <i class="fas fa-tags fa-2x text-primary"></i>
@@ -169,8 +278,9 @@ $attributes = get_product_attributes($db, $db_prefix);
                                                     data-bs-target="#collapse<?= $index ?>" 
                                                     aria-expanded="true" aria-controls="collapse<?= $index ?>">
                                                 <div class="form-check me-2">
-                                                    <input class="form-check-input" type="checkbox" 
-                                                        id="attrCheck<?= $index ?>">
+                                                    <input class="attribute-check-input" type="checkbox" 
+                                                        value="<?= $attribute['taxonomy'] ?>" id="attrCheck<?= $index ?>"
+                                                        <?= is_taxonomy_exists($attribute['taxonomy'], $savedTaxonomies) ? 'checked' : '' ?>>
                                                 </div>
                                                 <strong><?= esc_html($attribute['name']) ?></strong>
                                                 <span class="badge bg-secondary ms-2"><?= count($attribute['terms']) ?> items</span>
@@ -186,7 +296,8 @@ $attributes = get_product_attributes($db, $db_prefix);
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="checkbox" 
                                                                     value="<?= $term['term_id'] ?>" 
-                                                                    id="termCheck<?= $term['term_id'] ?>">
+                                                                    id="termCheck<?= $term['term_id'] ?>"
+                                                                    <?= is_attribute_exists($term['term_id'], $savedAttributes) ? 'checked' : '' ?>>
                                                                 <label class="form-check-label" for="termCheck<?= $term['term_id'] ?>">
                                                                     <?= esc_html($term['name']) ?>(<?= $term['count'] ?>)
                                                                     <small class="text-muted d-block">Slug: <?= $term['slug'] ?></small>

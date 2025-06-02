@@ -1,47 +1,54 @@
 document.addEventListener('DOMContentLoaded', function() {
     
-    // Save Attributes Button Handler
-    const saveBtn = document.getElementById('saveAttributesBtn');
-    if (saveBtn) {
-        saveBtn.addEventListener('click', function() {
-            // Show loading state
-            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Saving...';
-            saveBtn.disabled = true;
-            
-            // Collect all selected term IDs
-            const selectedTerms = [];
-            document.querySelectorAll('.term-checkbox:checked').forEach(checkbox => {
-                selectedTerms.push(checkbox.value);
-            });
-            
-            // Send data to server
-            fetch('save_attributes.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    terms: selectedTerms
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showAlert('success', 'Attributes saved successfully!');
-                } else {
-                    showAlert('danger', 'Error saving attributes: ' + data.message);
-                }
-            })
-            .catch(error => {
-                showAlert('danger', 'Network error: ' + error.message);
-            })
-            .finally(() => {
-                // Restore button state
-                saveBtn.innerHTML = '<i class="fas fa-save me-1"></i> Save Changes';
-                saveBtn.disabled = false;
-            });
+    document.getElementById('saveAttributesBtn').addEventListener('click', function() {
+        const saveBtn = this;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Saving...';
+        saveBtn.disabled = true;
+
+        // Collect selected attribute sligs
+        const selectedTaxonomies = [];
+        document.querySelectorAll('.attribute-check-input:checked').forEach(checkbox => {
+            if(checkbox.value != null){
+                selectedTaxonomies.push(checkbox.value);
+            }
         });
-    }
+        
+        // Collect selected term IDs
+        const selectedTerms = [];
+        document.querySelectorAll('.form-check-input:checked').forEach(checkbox => {
+            if(checkbox.value != null){
+                selectedTerms.push(checkbox.value);
+            }
+            
+        });
+        
+        // Send to server
+        fetch('save_attributes.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                terms: selectedTerms,
+                taxonomies: selectedTaxonomies 
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('success', 'Attributes saved successfully!');
+            } else {
+                showAlert('danger', 'Error: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            showAlert('danger', 'Network error: ' + error.message);
+        })
+        .finally(() => {
+            saveBtn.innerHTML = '<i class="fas fa-save me-1"></i> Save Changes';
+            saveBtn.disabled = false;
+        });
+    });
     
     // Helper function to show alerts
     function showAlert(type, message) {
@@ -69,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Attribute checkbox selects all terms
-    document.querySelectorAll('.accordion-header .form-check-input').forEach(checkbox => {
+    document.querySelectorAll('.accordion-header .attribute-check-input').forEach(checkbox => {
         checkbox.addEventListener('change', function() {
             const collapseId = this.closest('.accordion-header').querySelector('button').getAttribute('data-bs-target');
             const collapseEl = document.querySelector(collapseId);

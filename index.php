@@ -5,11 +5,10 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__.'/includes/bootstrap.php';
-require_once __DIR__.'/includes/header.php';
-
 $pageTitle = "Home";
 
+require_once __DIR__.'/includes/bootstrap.php';
+require_once __DIR__.'/includes/header.php';
 
 if (!empty($_SESSION['login_error'])) {
     echo '<div style="
