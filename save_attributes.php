@@ -52,8 +52,8 @@ try {
     //Insert selected attributes
     $insertAttrStmt = $db->prepare("
         INSERT INTO `{$config['db']['prefix']}attributes` 
-        (attribute_id, active_editing) 
-        VALUES (:attribute_id, 1)
+        (attribute_id, active_editing, attribute_cat) 
+        VALUES (:attribute_id, 1, :attribute_cat)
     ");
 
     //Insert selected taxonomies
@@ -63,11 +63,15 @@ try {
         VALUES ('attribute', :taxonomy_slug)
     ");
 
-    foreach ($data['terms'] as $termId) {
-        $insertAttrStmt->execute([':attribute_id' => (int)$termId]);
+    foreach ($data['terms'] as $term) {
+        $insertAttrStmt->execute([
+            ':attribute_id' => (int)$term['term_id'],
+            ':attribute_cat' => $term['term_cate']
+        ]);
     }
     
     foreach ($data['taxonomies'] as $taxonomy) {
+
         $insertTaxStmt->execute([':taxonomy_slug' => $taxonomy]);
     }
 

@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Collect selected attribute sligs
         const selectedTaxonomies = [];
         document.querySelectorAll('.attribute-check-input:checked').forEach(checkbox => {
-            if(checkbox.value != null){
+            if (checkbox.value != null) {
                 selectedTaxonomies.push(checkbox.value);
             }
         });
@@ -17,21 +17,28 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedTerms = [];
         document.querySelectorAll('.form-check-input:checked').forEach(checkbox => {
             if(checkbox.value != null){
-                selectedTerms.push(checkbox.value);
+                selectedTerms.push({
+                    term_cate: checkbox.name,
+                    term_id: checkbox.value
+                });
             }
-            
         });
-        
+
+        // Prepare data to send
+        const dataToSend = { 
+            terms: selectedTerms,
+            taxonomies: selectedTaxonomies 
+        };
+
+        console.log('Data to send:', JSON.stringify(dataToSend, null, 2));
+
         // Send to server
         fetch('save_attributes.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ 
-                terms: selectedTerms,
-                taxonomies: selectedTaxonomies 
-            })
+            body: JSON.stringify(dataToSend)
         })
         .then(response => response.json())
         .then(data => {

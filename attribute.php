@@ -295,7 +295,7 @@ function is_taxonomy_exists($slug, $savedTaxonomies) {
                                                         <div class="term-item">
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="checkbox" 
-                                                                    value="<?= $term['term_id'] ?>" 
+                                                                    value="<?= $term['term_id'] ?>" name="<?= $attribute['taxonomy'] ?>" 
                                                                     id="termCheck<?= $term['term_id'] ?>"
                                                                     <?= is_attribute_exists($term['term_id'], $savedAttributes) ? 'checked' : '' ?>>
                                                                 <label class="form-check-label" for="termCheck<?= $term['term_id'] ?>">

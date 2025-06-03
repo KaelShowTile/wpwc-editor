@@ -9,6 +9,13 @@ body{font-family: "Work Sans", sans-serif; font-size: 16px;}
 .page-header-container h1{margin-bottom: 0;}
 .d-flex.btns-align-right{width: 100%; text-align: right; display: inline-block !important;}
 
+.container table.dataTable.table-hover>tbody>tr:hover>*{box-shadow: inset 0 0 0 9999px #000; color: #fff;}
+.container table.dataTable>tbody>tr.selected>*{box-shadow: inset 0 0 0 9999px #000;}
+.container table.dataTable.table-hover>tbody>tr.selected:hover>*{box-shadow: inset 0 0 0 9999px #111;}
+.container .table>:not(caption)>*>*{border-bottom-width:0;}
+.container table.dataTable>tbody>tr.odd td{background: #fafafa;}
+.container table.dataTable>tbody>tr td{font-size: 0.9rem; line-height: 1.25;}
+
 /* header */
 header{display: inline-block; width: 100%; margin-bottom: 20px; background: #fafafa;}
 header .container{padding: 10px 0 15px;}
@@ -21,7 +28,7 @@ header nav .menu-list .menu-item a{text-decoration: none; color:#333; transition
 header nav .menu-list .menu-item a:hover{color:#000;}
 
 /* attribute */
-.wpwc-list-container input{font-size: 1.6rem;}
+.wpwc-list-container .attribute-check-input, .list-group .form-check-input{font-size: 1.6rem;}
 .wpwc-list-container .attribute-check-input{--bs-form-check-bg: var(--bs-body-bg); width: 1em; height: 1em; margin-top: .25em;}
 .wpwc-list-container .card{border-width: 0;}
 .wpwc-intro-container .card.stats-card{flex-direction: row; align-items: center;}
@@ -44,7 +51,19 @@ header nav .menu-list .menu-item a:hover{color:#000;}
 /* product */
 #productsTable .product-thumb{width: 80px; height: 80px;}
 #productsTable_filter{display: inline-block; position: absolute; top: -210px;}
+#thumb-col{max-width: 80px !important;}
+#status-col{max-width: 50px !important;}
+#title-col{min-width: 200px;}
 
+.attribute-cell {position: relative; cursor: pointer; min-height: 40px; padding: 5px !important;}
+.attribute-value {padding: 5px; min-height: 30px;}
+.attribute-input {position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: white; z-index: 10; padding: 0 5px; display: none; }
+.attribute-cell.editing .attribute-value {display: none;}
+.attribute-cell.editing .attribute-input { display: block;}
+.autocomplete-results {position: absolute; top: 100%; left: 0; right: 0; max-height: 200px; overflow-y: auto; background: white; border: 1px solid #ddd; border-top: none; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: none;}
+.autocomplete-item {padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #eee; transition: background-color 0.2s; color:#000; font-size: 0.75rem;}
+.autocomplete-item:hover {background-color: #f0f5ff;}
+.autocomplete-item.highlighted {background-color: #f9f9f9; color: #000;}
 
 /* responsive */
 @media (min-width: 1400px)

@@ -1,1 +1,76 @@
-[2025-06-02 04:27:28] pa_colour
+[2025-06-03 05:15:16] product id is: 1157
+[2025-06-03 05:15:16] attribute: pa_colour
+[2025-06-03 05:15:16] new value is: White
+[2025-06-03 05:15:16] check value: White
+[2025-06-03 05:15:17] product id is: 0
+[2025-06-03 05:15:17] attribute: 
+[2025-06-03 05:15:17] new value is: 
+[2025-06-03 05:15:18] product id is: 1157
+[2025-06-03 05:15:18] attribute: pa_colour
+[2025-06-03 05:15:18] new value is: White
+[2025-06-03 05:15:18] check value: White
+[2025-06-03 05:15:41] product id is: 1157
+[2025-06-03 05:15:41] attribute: pa_colour
+[2025-06-03 05:15:41] new value is: 109
+[2025-06-03 05:15:41] check value: 109
+[2025-06-03 05:18:15] product id is: 1157
+[2025-06-03 05:18:15] attribute: pa_colour
+[2025-06-03 05:18:15] new value is: White
+[2025-06-03 05:18:15] check value: White
+[2025-06-03 05:18:15] check id: 109
+[2025-06-03 05:18:15] wp_set_object_terms: 1157 - Array - pa_colour
+[2025-06-03 05:18:16] product id is: 0
+[2025-06-03 05:18:16] attribute: 
+[2025-06-03 05:18:16] new value is: 
+[2025-06-03 05:18:17] product id is: 1157
+[2025-06-03 05:18:17] attribute: pa_colour
+[2025-06-03 05:18:17] new value is: White
+[2025-06-03 05:18:17] check value: White
+[2025-06-03 05:18:17] check id: 109
+[2025-06-03 05:18:17] wp_set_object_terms: 1157 - Array - pa_colour
+[2025-06-03 05:18:59] product id is: 1157
+[2025-06-03 05:18:59] attribute: pa_colour
+[2025-06-03 05:18:59] new value is: White
+[2025-06-03 05:18:59] check value: White
+[2025-06-03 05:18:59] check id: 109
+[2025-06-03 05:18:59] wp_set_object_terms: 1157 - 109 - pa_colour
+[2025-06-03 05:19:00] product id is: 0
+[2025-06-03 05:19:00] attribute: 
+[2025-06-03 05:19:00] new value is: 
+[2025-06-03 05:19:00] product id is: 1157
+[2025-06-03 05:19:00] attribute: pa_colour
+[2025-06-03 05:19:00] new value is: White
+[2025-06-03 05:19:00] check value: White
+[2025-06-03 05:19:00] check id: 109
+[2025-06-03 05:19:00] wp_set_object_terms: 1157 - 109 - pa_colour
+[2025-06-03 05:19:17] product id is: 1157
+[2025-06-03 05:19:17] attribute: pa_colour
+[2025-06-03 05:19:17] new value is: 109
+[2025-06-03 05:19:17] check value: 109
+[2025-06-03 05:19:17] check id: 265
+[2025-06-03 05:19:17] wp_set_object_terms: 1157 - 265 - pa_colour
+[2025-06-03 05:28:21] product id is: 1157
+[2025-06-03 05:28:21] attribute: pa_colour
+[2025-06-03 05:28:21] new value is: white
+[2025-06-03 05:28:21] check value: white
+[2025-06-03 05:28:21] check id: 109
+[2025-06-03 05:30:40] product id is: 1157
+[2025-06-03 05:30:40] attribute: pa_colour
+[2025-06-03 05:30:40] new value is: white
+[2025-06-03 05:30:40] check id: 109
+[2025-06-03 05:30:40] check id: 109
+[2025-06-03 05:32:25] product id is: 1157
+[2025-06-03 05:32:25] attribute: pa_colour
+[2025-06-03 05:32:25] new value is: white
+[2025-06-03 05:32:25] check id: 109
+[2025-06-03 05:32:25] check id: 109
+[2025-06-03 05:32:49] product id is: 1157
+[2025-06-03 05:32:49] attribute: pa_finish
+[2025-06-03 05:32:49] new value is: 110
+[2025-06-03 05:32:49] check id: 264
+[2025-06-03 05:32:49] check id: 264
+[2025-06-03 05:33:11] product id is: 1157
+[2025-06-03 05:33:11] attribute: pa_finish
+[2025-06-03 05:33:11] new value is: Gloss
+[2025-06-03 05:33:11] check id: 110
+[2025-06-03 05:33:11] check id: 110
