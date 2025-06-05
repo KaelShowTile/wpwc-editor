@@ -1,76 +1,47 @@
-[2025-06-03 05:15:16] product id is: 1157
-[2025-06-03 05:15:16] attribute: pa_colour
-[2025-06-03 05:15:16] new value is: White
-[2025-06-03 05:15:16] check value: White
-[2025-06-03 05:15:17] product id is: 0
-[2025-06-03 05:15:17] attribute: 
-[2025-06-03 05:15:17] new value is: 
-[2025-06-03 05:15:18] product id is: 1157
-[2025-06-03 05:15:18] attribute: pa_colour
-[2025-06-03 05:15:18] new value is: White
-[2025-06-03 05:15:18] check value: White
-[2025-06-03 05:15:41] product id is: 1157
-[2025-06-03 05:15:41] attribute: pa_colour
-[2025-06-03 05:15:41] new value is: 109
-[2025-06-03 05:15:41] check value: 109
-[2025-06-03 05:18:15] product id is: 1157
-[2025-06-03 05:18:15] attribute: pa_colour
-[2025-06-03 05:18:15] new value is: White
-[2025-06-03 05:18:15] check value: White
-[2025-06-03 05:18:15] check id: 109
-[2025-06-03 05:18:15] wp_set_object_terms: 1157 - Array - pa_colour
-[2025-06-03 05:18:16] product id is: 0
-[2025-06-03 05:18:16] attribute: 
-[2025-06-03 05:18:16] new value is: 
-[2025-06-03 05:18:17] product id is: 1157
-[2025-06-03 05:18:17] attribute: pa_colour
-[2025-06-03 05:18:17] new value is: White
-[2025-06-03 05:18:17] check value: White
-[2025-06-03 05:18:17] check id: 109
-[2025-06-03 05:18:17] wp_set_object_terms: 1157 - Array - pa_colour
-[2025-06-03 05:18:59] product id is: 1157
-[2025-06-03 05:18:59] attribute: pa_colour
-[2025-06-03 05:18:59] new value is: White
-[2025-06-03 05:18:59] check value: White
-[2025-06-03 05:18:59] check id: 109
-[2025-06-03 05:18:59] wp_set_object_terms: 1157 - 109 - pa_colour
-[2025-06-03 05:19:00] product id is: 0
-[2025-06-03 05:19:00] attribute: 
-[2025-06-03 05:19:00] new value is: 
-[2025-06-03 05:19:00] product id is: 1157
-[2025-06-03 05:19:00] attribute: pa_colour
-[2025-06-03 05:19:00] new value is: White
-[2025-06-03 05:19:00] check value: White
-[2025-06-03 05:19:00] check id: 109
-[2025-06-03 05:19:00] wp_set_object_terms: 1157 - 109 - pa_colour
-[2025-06-03 05:19:17] product id is: 1157
-[2025-06-03 05:19:17] attribute: pa_colour
-[2025-06-03 05:19:17] new value is: 109
-[2025-06-03 05:19:17] check value: 109
-[2025-06-03 05:19:17] check id: 265
-[2025-06-03 05:19:17] wp_set_object_terms: 1157 - 265 - pa_colour
-[2025-06-03 05:28:21] product id is: 1157
-[2025-06-03 05:28:21] attribute: pa_colour
-[2025-06-03 05:28:21] new value is: white
-[2025-06-03 05:28:21] check value: white
-[2025-06-03 05:28:21] check id: 109
-[2025-06-03 05:30:40] product id is: 1157
-[2025-06-03 05:30:40] attribute: pa_colour
-[2025-06-03 05:30:40] new value is: white
-[2025-06-03 05:30:40] check id: 109
-[2025-06-03 05:30:40] check id: 109
-[2025-06-03 05:32:25] product id is: 1157
-[2025-06-03 05:32:25] attribute: pa_colour
-[2025-06-03 05:32:25] new value is: white
-[2025-06-03 05:32:25] check id: 109
-[2025-06-03 05:32:25] check id: 109
-[2025-06-03 05:32:49] product id is: 1157
-[2025-06-03 05:32:49] attribute: pa_finish
-[2025-06-03 05:32:49] new value is: 110
-[2025-06-03 05:32:49] check id: 264
-[2025-06-03 05:32:49] check id: 264
-[2025-06-03 05:33:11] product id is: 1157
-[2025-06-03 05:33:11] attribute: pa_finish
-[2025-06-03 05:33:11] new value is: Gloss
-[2025-06-03 05:33:11] check id: 110
-[2025-06-03 05:33:11] check id: 110
+[2025-06-05 06:51:35] Product ID: 1157
+[2025-06-05 06:51:35] Content: testing
+[2025-06-05 06:51:35] load config...
+[2025-06-05 04:51:36] get wp-load
+[2025-06-05 05:00:38] Product ID: 1157
+[2025-06-05 05:00:38] Content: how 
+[2025-06-05 05:00:38] load config...
+[2025-06-05 05:00:38] get wp-load
+[2025-06-05 05:02:37] Product ID: 1157
+[2025-06-05 05:02:37] Content: why
+[2025-06-05 05:02:37] load config...
+[2025-06-05 05:02:37] get wp-load
+[2025-06-05 07:07:59] load config...
+[2025-06-05 05:08:00] get wp-load
+[2025-06-05 05:08:00] Product ID: 1157
+[2025-06-05 05:08:00] Content: TRICK
+[2025-06-05 07:09:22] load config...
+[2025-06-05 07:09:22] C:\xampp\htdocs\wpwc-editor\includes/config.php
+[2025-06-05 05:09:24] get wp-load
+[2025-06-05 05:09:24] Product ID: 1157
+[2025-06-05 05:09:24] Content: testt
+[2025-06-05 07:10:42] load config...
+[2025-06-05 05:10:44] C:\xampp\htdocs\cht
+[2025-06-05 05:10:44] get wp-load
+[2025-06-05 05:10:44] Product ID: 1157
+[2025-06-05 05:10:44] Content: as you go
+[2025-06-05 07:12:33] load config...
+[2025-06-05 05:12:35] C:\xampp\htdocs\cht/wp-load.php
+[2025-06-05 05:12:35] get wp-load
+[2025-06-05 05:12:35] Product ID: 1157
+[2025-06-05 05:12:35] Content: frwa
+[2025-06-05 05:21:55] Product ID: 1157
+[2025-06-05 05:21:55] Content: test
+[2025-06-05 05:47:36] z2b1ckb3ks_
+[2025-06-05 05:47:36] cheapesttile
+[2025-06-05 05:49:09] z2b1ckb3ks_
+[2025-06-05 05:49:09] cheapesttile
+[2025-06-05 05:49:09] 1157
+[2025-06-05 05:49:09] testtt
+[2025-06-05 05:51:20] z2b1ckb3ks_
+[2025-06-05 05:51:20] cheapesttile
+[2025-06-05 05:51:20] 1157
+[2025-06-05 05:51:20] testing
+[2025-06-05 05:53:31] z2b1ckb3ks_
+[2025-06-05 05:53:31] cheapesttile
+[2025-06-05 05:53:31] 1157
+[2025-06-05 05:53:31] testing2

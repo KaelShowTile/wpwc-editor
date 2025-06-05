@@ -201,6 +201,7 @@ foreach ($active_taxonomies as $taxonomy) {
                         <th width="100">Price</th>
                         <th width="100">Sale Price</th>
                         <th width="120">Stock</th>
+                        <th width="120">Description</th>
                         <?php foreach ($active_taxonomies as $taxonomy): ?>
                             <th width="150" data-taxonomy="<?= esc_attr($taxonomy) ?>">
                                 <?= esc_html($taxonomy_names[$taxonomy]) ?>
@@ -213,7 +214,7 @@ foreach ($active_taxonomies as $taxonomy) {
                 <tbody>
                     <?php
                     $products = $wpdb->get_results("
-                        SELECT p.ID, p.post_title, 
+                        SELECT p.ID, p.post_title, p.post_content,
                             MAX(CASE WHEN pm1.meta_key = '_sku' THEN pm1.meta_value END) AS sku,
                             MAX(CASE WHEN pm1.meta_key = '_regular_price' THEN pm1.meta_value END) AS regular_price,
                             MAX(CASE WHEN pm1.meta_key = '_sale_price' THEN pm1.meta_value END) AS sale_price,
@@ -222,7 +223,6 @@ foreach ($active_taxonomies as $taxonomy) {
                         FROM {$wpdb->posts} p
                         LEFT JOIN {$wpdb->postmeta} pm1 ON p.ID = pm1.post_id
                         WHERE p.post_type = 'product'
-                        AND p.post_status = 'publish'
                         GROUP BY p.ID
                         ORDER BY p.ID DESC
                     ");
@@ -262,25 +262,76 @@ foreach ($active_taxonomies as $taxonomy) {
                         }
                     ?>
                     <tr data-id="<?= $product->ID ?>">
+
+                        <!-- Product ID -->
                         <td class="editable-cell" data-field="id"><?= $product->ID ?></td>
+
+                        <!-- Product Thunbnail -->
+                        <td><img src="<?= $thumbnail_url ?>" alt="Thumbnail" class="product-thumb"></td>
+
+                        <!-- Product Title -->
+                        <td class="editable-cell" contenteditable="true" data-field="post_title" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->post_title) ?>"><?= esc_html($product->post_title) ?></td>
+
+                        <!-- SKU -->
+                        <td class="editable-cell hide-this-area" data-field="_sku" contenteditable="true" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->sku) ?>"><?= esc_html($product->sku) ?></td>
+
+                        <!-- Price -->
                         <td>
-                            <img src="<?= $thumbnail_url ?>" alt="Thumbnail" class="product-thumb">
+                            <div class="editable-field price-field" 
+                                contenteditable="true"
+                                data-field="_regular_price"
+                                data-productid="<?= $product->ID ?>"
+                                data-original="<?= esc_attr($product->regular_price) ?>">
+                                <?= $product->regular_price ? wc_price($product->regular_price) : '&mdash;' ?>
+                            </div>
                         </td>
-                        <td class="editable-cell" data-field="title" contenteditable="true"><?= esc_html($product->post_title) ?></td>
-                        <td class="editable-cell hide-this-area" data-field="sku" contenteditable="true"><?= esc_html($product->sku) ?></td>
-                        <td class="editable-cell price-cell" data-field="regular_price" contenteditable="true">
-                            <?= $product->regular_price ? wc_price($product->regular_price) : '&mdash;' ?>
+                        
+                        <!-- Sales Price -->
+                        <td>
+                            <div class="editable-field price-field" 
+                                contenteditable="true"
+                                data-field="_sale_price"
+                                data-productid="<?= $product->ID ?>"
+                                data-original="<?= esc_attr($product->sale_price) ?>">
+                                <?= $product->sale_price ? wc_price($product->sale_price) : '&mdash;' ?>
+                            </div>
                         </td>
-                        <td class="editable-cell price-cell sale-price" data-field="sale_price" contenteditable="true">
-                            <?= $product->sale_price ? wc_price($product->sale_price) : '&mdash;' ?>
-                        </td>
-                        <td class="editable-cell" data-field="stock_status">
-                            <select class="form-select" id="bulkStockStatus">
+                        
+                        <!-- Stock Status -->
+                        <td class="editable-cel" data-field="stock_status" data-productid="<?= $product->ID ?>">
+                            <select class="form-select stock-status-select" id="bulkStockStatus" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->stock_status) ?>">
                                 <option value="instock" <?= strtolower($product->stock_status) === 'instock' ? 'selected' : '' ?>>instock</option>
                                 <option value="outofstock" <?= strtolower($product->stock_status) === 'outofstock' ? 'selected' : '' ?>>outofstock</option>
                                 <option value="onbackorder" <?= strtolower($product->stock_status) === 'onbackorder' ? 'selected' : '' ?>>onbackorder</option>
                             </select> 
                         </td>
+
+                        <!-- Product Content -->
+                        <td class="edit-product-content">
+                            <!-- button -->
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit-content-<?= $product->ID ?>" data-id="<?= $product->ID ?>" data-content="<?= esc_attr($product->post_content) ?>">Edit</button>
+                            <!-- modal -->
+                            <div class="modal fade" id="edit-content-<?= $product->ID ?>" tabindex="-1" role="dialog" aria-labelledby="ContentLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="ContentLabel"><?= esc_html($product->post_title) ?></h5>
+                                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <textarea data-id="<?= $product->ID ?>"><?= $product->post_content ?></textarea>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary save-description" data-bs-dismiss="modal" data-id="<?= $product->ID ?>">Save</button>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- Attribute -->
                         <?php foreach ($active_taxonomies as $taxonomy): 
                             $attr_value = $product_attributes[$product->ID][$taxonomy] ?? '';
                         ?>
@@ -304,9 +355,13 @@ foreach ($active_taxonomies as $taxonomy) {
                             </div>
                         </td>
                         <?php endforeach; ?>
+
+                        <!-- Product Status -->
                         <td>
                             <span class="badge bg-success">Published</span>
                         </td>
+
+                        <!-- Buttons -->
                         <td>
                             <a href= "<?= $config['wordpress']['url'] ?>wp-admin/post.php?post=<?= $product->ID ?>&action=edit" class="btn btn-sm btn-outline-primary edit-btn" target="_blank">
                                 <i class="fas fa-edit"></i>
@@ -345,194 +400,216 @@ foreach ($active_taxonomies as $taxonomy) {
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-        // Initialize DataTable
-        const table = $('#productsTable').DataTable({
-            paging: true,
-            pageLength: 25,
-            lengthMenu: [10, 25, 50, 100],
-            dom: '<"top"f>rt<"bottom"lip><"clear">',
-            language: {
-                search: "",
-                searchPlaceholder: "Search products..."
-            },
-            columnDefs: [
-                { targets: [0, 3, 4, 5, 6, 7, 8], orderable: true },
-                { targets: [1, 2], orderable: false }
-            ],
-            initComplete: function() {
-                $('.dataTables_filter input').addClass('form-control');
-            }
-        });
-        
-        // Row selection
-        $('#productsTable tbody').on('click', 'tr', function(e) {
-            if ($(e.target).is('button') || $(e.target).is('input')) {
-                return;
-            }
-            
-            $(this).toggleClass('selected');
-            updateSelectedCount();
-        });
-        
-        // Update selected count
-        function updateSelectedCount() {
-            const count = table.rows('.selected').count();
-            $('#selectedCount').text(count);
-            
-            // Show/hide bulk edit panel
-            if (count > 0) {
-                $('#bulkEditPanel').addClass('active');
-            } else {
-                $('#bulkEditPanel').removeClass('active');
-            }
+$(document).ready(function() {
+    // Initialize DataTable
+    const table = $('#productsTable').DataTable({
+        paging: true,
+        pageLength: 25,
+        lengthMenu: [10, 25, 50, 100],
+        dom: '<"top"f>rt<"bottom"lip><"clear">',
+        language: {
+            search: "",
+            searchPlaceholder: "Search products..."
+        },
+        columnDefs: [
+            { targets: [0, 2, 3, 4, 5, 6, 7, 8], orderable: true },
+            { targets: [1], orderable: false }
+        ],
+        initComplete: function() {
+            $('.dataTables_filter input').addClass('form-control');
+        }
+    });
+    
+    // Row selection
+    $('#productsTable tbody').on('click', 'tr', function(e) {
+        if ($(e.target).is('button') || $(e.target).is('input')) {
+            return;
         }
         
-        // Toggle bulk edit panel
-        $('#bulkEditBtn').click(function() {
-            if ($('#bulkEditPanel').hasClass('active')) {
-                $('#bulkEditPanel').removeClass('active');
-                table.$('tr.selected').removeClass('selected');
-                updateSelectedCount();
-            } else {
-                $('#bulkEditPanel').addClass('active');
+        $(this).toggleClass('selected');
+        updateSelectedCount();
+    });
+    
+    // Update selected count
+    function updateSelectedCount() {
+        const count = table.rows('.selected').count();
+        $('#selectedCount').text(count);
+        
+        // Show/hide bulk edit panel
+        if (count > 0) {
+            $('#bulkEditPanel').addClass('active');
+        } else {
+            $('#bulkEditPanel').removeClass('active');
+        }
+    }
+    
+    // Toggle bulk edit panel
+    $('#bulkEditBtn').click(function() {
+        if ($('#bulkEditPanel').hasClass('active')) {
+            $('#bulkEditPanel').removeClass('active');
+            table.$('tr.selected').removeClass('selected');
+            updateSelectedCount();
+        } else {
+            $('#bulkEditPanel').addClass('active');
+        }
+    });
+    
+    // Cancel bulk edit
+    $('#cancelBulkEdit').click(function() {
+        table.$('tr.selected').removeClass('selected');
+        $('#bulkEditPanel').removeClass('active');
+        updateSelectedCount();
+    });
+    
+    //Initialize field editing
+    $('#productsTable').on('focus', '[contenteditable]', function() {
+        const $cell = $(this);
+        $cell.data('original', $cell.text());
+
+        // For price fields, remove currency formatting
+        if ($cell.hasClass('price-field')) {
+            const priceValue = parseFloat($cell.text().replace(/[^\d.]/g, ''));
+            if (!isNaN(priceValue)) {
+                $cell.text(priceValue.toFixed(2));
+            }
+        }
+    }).on('blur', '[contenteditable]', function() {
+        const $cell = $(this);
+        const original = $cell.data('original');
+        const newValue = $cell.text().trim();
+        const field = $cell.data('field');
+        const productId = $cell.closest('tr').data('id');
+        
+        // For price fields, add currency formatting
+        if ($cell.hasClass('price-field')) {
+            const numValue = parseFloat(newValue.replace(/[^\d.]/g, ''));
+            if (!isNaN(numValue)) {
+                $cell.text(wc_price(numValue));
+            }
+        }
+
+        if (newValue !== original) {
+            // Visual feedback
+            $cell.addClass('text-warning');
+            saveFieldValue($cell);
+            
+            console.log(`Saving product ${productId}: ${field} = ${newValue}`);
+        }
+        // Handle Enter and Escape keys
+        $('.editable-field').on('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                $(this).blur();
+            } else if (e.key === 'Escape') {
+                const $field = $(this);
+                $field.text($field.data('original'));
+                $field.blur();
             }
         });
+    });
+    
+    // Price formatting
+    $('#productsTable').on('blur', '.price-cell[contenteditable]', function() {
+        const $cell = $(this);
+        let value = $cell.text().trim();
         
-        // Cancel bulk edit
-        $('#cancelBulkEdit').click(function() {
+        // Remove currency symbols and commas
+        value = value.replace(/[^\d.]/g, '');
+        
+        // Parse as float and format
+        const num = parseFloat(value);
+        if (!isNaN(num)) {
+            $cell.text('$' + num.toFixed(2));
+        }
+    });
+    
+    // Apply bulk changes
+    $('#applyBulkEdit').click(function() {
+        const regularPrice = $('#bulkPrice').val();
+        const salePrice = $('#bulkSalePrice').val();
+        const stockStatus = $('#bulkStockStatus').val();
+        
+        const changes = {};
+        if (regularPrice) changes.regular_price = regularPrice;
+        if (salePrice) changes.sale_price = salePrice;
+        if (stockStatus) changes.stock_status = stockStatus;
+        
+        if (Object.keys(changes).length === 0) {
+            alert('Please make at least one change');
+            return;
+        }
+        
+        const productIds = [];
+        table.rows('.selected').every(function() {
+            productIds.push($(this.node()).data('id'));
+        });
+        
+        // Show loading
+        const btn = $(this);
+        btn.html('<i class="fas fa-spinner fa-spin me-1"></i> Applying...');
+        btn.prop('disabled', true);
+        
+        // Simulate bulk save (in real app, AJAX call)
+        setTimeout(() => {
+            console.log(`Applying changes to ${productIds.length} products:`, changes);
+            alert(`Changes applied to ${productIds.length} products!`);
+            
+            btn.html('Apply Changes');
+            btn.prop('disabled', false);
             table.$('tr.selected').removeClass('selected');
             $('#bulkEditPanel').removeClass('active');
             updateSelectedCount();
+            
+            // Reset form
+            $('#bulkPrice, #bulkSalePrice').val('');
+            $('#bulkStockStatus').val('');
+        }, 1000);
+    });
+    
+    // Bulk delete
+    $('#bulkDelete').click(function() {
+        const productIds = [];
+        table.rows('.selected').every(function() {
+            productIds.push($(this.node()).data('id'));
         });
         
-        // Inline editing
-        $('#productsTable').on('focus', '[contenteditable]', function() {
-            const $cell = $(this);
-            $cell.data('original', $cell.text());
-        }).on('blur', '[contenteditable]', function() {
-            const $cell = $(this);
-            const original = $cell.data('original');
-            const newValue = $cell.text().trim();
-            const field = $cell.data('field');
-            const productId = $cell.closest('tr').data('id');
-            
-            if (newValue !== original) {
-                // Visual feedback
-                $cell.addClass('text-warning');
-                
-                // Simulate save action (in a real app, this would be an AJAX call)
-                setTimeout(() => {
-                    $cell.removeClass('text-warning').addClass('text-success');
-                    setTimeout(() => $cell.removeClass('text-success'), 1000);
-                }, 500);
-                
-                console.log(`Saving product ${productId}: ${field} = ${newValue}`);
-            }
-        });
+        if (productIds.length === 0) {
+            alert('Please select at least one product');
+            return;
+        }
         
-        // Price formatting
-        $('#productsTable').on('blur', '.price-cell[contenteditable]', function() {
-            const $cell = $(this);
-            let value = $cell.text().trim();
-            
-            // Remove currency symbols and commas
-            value = value.replace(/[^\d.]/g, '');
-            
-            // Parse as float and format
-            const num = parseFloat(value);
-            if (!isNaN(num)) {
-                $cell.text('$' + num.toFixed(2));
-            }
-        });
+        if (!confirm(`Are you sure you want to delete ${productIds.length} products? This cannot be undone.`)) {
+            return;
+        }
         
-        // Apply bulk changes
-        $('#applyBulkEdit').click(function() {
-            const regularPrice = $('#bulkPrice').val();
-            const salePrice = $('#bulkSalePrice').val();
-            const stockStatus = $('#bulkStockStatus').val();
-            
-            const changes = {};
-            if (regularPrice) changes.regular_price = regularPrice;
-            if (salePrice) changes.sale_price = salePrice;
-            if (stockStatus) changes.stock_status = stockStatus;
-            
-            if (Object.keys(changes).length === 0) {
-                alert('Please make at least one change');
-                return;
-            }
-            
-            const productIds = [];
-            table.rows('.selected').every(function() {
-                productIds.push($(this.node()).data('id'));
-            });
-            
-            // Show loading
-            const btn = $(this);
-            btn.html('<i class="fas fa-spinner fa-spin me-1"></i> Applying...');
-            btn.prop('disabled', true);
-            
-            // Simulate bulk save (in real app, AJAX call)
-            setTimeout(() => {
-                console.log(`Applying changes to ${productIds.length} products:`, changes);
-                alert(`Changes applied to ${productIds.length} products!`);
-                
-                btn.html('Apply Changes');
-                btn.prop('disabled', false);
-                table.$('tr.selected').removeClass('selected');
-                $('#bulkEditPanel').removeClass('active');
-                updateSelectedCount();
-                
-                // Reset form
-                $('#bulkPrice, #bulkSalePrice').val('');
-                $('#bulkStockStatus').val('');
-            }, 1000);
-        });
+        // Show loading
+        const btn = $(this);
+        btn.html('<i class="fas fa-spinner fa-spin me-1"></i> Deleting...');
+        btn.prop('disabled', true);
         
-        // Bulk delete
-        $('#bulkDelete').click(function() {
-            const productIds = [];
-            table.rows('.selected').every(function() {
-                productIds.push($(this.node()).data('id'));
-            });
+        // Simulate delete (in real app, AJAX call)
+        setTimeout(() => {
+            console.log(`Deleting ${productIds.length} products:`, productIds);
+            alert(`Deleted ${productIds.length} products!`);
             
-            if (productIds.length === 0) {
-                alert('Please select at least one product');
-                return;
-            }
-            
-            if (!confirm(`Are you sure you want to delete ${productIds.length} products? This cannot be undone.`)) {
-                return;
-            }
-            
-            // Show loading
-            const btn = $(this);
-            btn.html('<i class="fas fa-spinner fa-spin me-1"></i> Deleting...');
-            btn.prop('disabled', true);
-            
-            // Simulate delete (in real app, AJAX call)
-            setTimeout(() => {
-                console.log(`Deleting ${productIds.length} products:`, productIds);
-                alert(`Deleted ${productIds.length} products!`);
-                
-                btn.html('<i class="fas fa-trash me-1"></i> Delete Selected');
-                btn.prop('disabled', false);
-                table.rows('.selected').remove().draw();
-                $('#bulkEditPanel').removeClass('active');
-                updateSelectedCount();
-            }, 1000);
-        });
+            btn.html('<i class="fas fa-trash me-1"></i> Delete Selected');
+            btn.prop('disabled', false);
+            table.rows('.selected').remove().draw();
+            $('#bulkEditPanel').removeClass('active');
+            updateSelectedCount();
+        }, 1000);
+    });
+    
+    // Refresh button
+    $('#refreshBtn').click(function() {
+        const btn = $(this);
+        btn.html('<i class="fas fa-spinner fa-spin me-1"></i> Refreshing...');
+        btn.prop('disabled', true);
         
-        // Refresh button
-        $('#refreshBtn').click(function() {
-            const btn = $(this);
-            btn.html('<i class="fas fa-spinner fa-spin me-1"></i> Refreshing...');
-            btn.prop('disabled', true);
-            
-            setTimeout(() => {
-                location.reload();
-            }, 500);
-        });
+        setTimeout(() => {
+            location.reload();
+        }, 500);
+    });
 
     // Attribute cell editing
     $('#productsTable').on('click', '.attribute-cell', function(e) {
@@ -651,54 +728,12 @@ foreach ($active_taxonomies as $taxonomy) {
         saveAttributeValue($cell);
     });
     
-    // Save on blur
+    // Save attribute on blur
     $('#productsTable').on('blur', '.attribute-autocomplete', function() {
         const $input = $(this);
         const $cell = $input.closest('.attribute-cell');
         saveAttributeValue($cell);
     });
-    
-    // Save attribute value
-    function saveAttributeValue($cell) {
-        const $input = $cell.find('.attribute-autocomplete');
-        const $valueDiv = $cell.find('.attribute-value');
-        const newValue = $input.val();
-        const taxonomy = $input.data('taxonomy');
-        const productId = $cell.data('productid');
-        
-        // Update display
-        $valueDiv.text(newValue);
-        $valueDiv.show();
-        $cell.find('.attribute-input').hide();
-        
-        // Visual feedback
-        $cell.addClass('saving');
-
-        console.log("Sending attribute save request:", {
-            product_id: productId,
-            taxonomy: taxonomy,
-            value: newValue
-        });
-        
-        // Save to server
-        $.ajax({
-            url: 'save_product_attribute.php',
-            method: 'POST',
-            data: {
-                product_id: productId,
-                taxonomy: taxonomy,
-                value: newValue
-            },
-            success: function() {
-                $cell.removeClass('saving').addClass('saved');
-                setTimeout(() => $cell.removeClass('saved'), 2000);
-            },
-            error: function() {
-                $cell.removeClass('saving').addClass('error');
-                setTimeout(() => $cell.removeClass('error'), 2000);
-            }
-        });
-    }
     
     // Close autocomplete when clicking outside
     $(document).on('click', function(e) {
@@ -706,6 +741,93 @@ foreach ($active_taxonomies as $taxonomy) {
             !$(e.target).hasClass('attribute-autocomplete')) {
             $('.autocomplete-results').empty().hide();
         }
+    });
+
+    // Stock status change handler
+    $('#productsTable').on('change', '.stock-status-select', function() {
+        const $select = $(this);
+        const productId = $select.data('productid');
+        const newStatus = $select.val();
+        const originalStatus = $select.data('original');
+
+        if (newStatus !== originalStatus) {
+            $select.prop('disabled', true).addClass('saving');
+            $select.after('<span class="saving-indicator"></span>');
+
+            var currentUrl = window.location.href;
+            var baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
+
+            $.ajax({
+                url: baseUrl + '/includes/save_product_stock.php',
+                method: 'POST',
+                data: {
+                    product_id: productId,
+                    status: newStatus
+                },
+                success: function() {
+                    $select.removeClass('saving').data('original', newStatus);
+                    $select.siblings('.saving-indicator').remove();
+                    $select.prop('disabled', false);
+                    
+                    // Show success badge
+                    const $badge = $(`<span class="badge bg-success position-absolute top-0 start-100 translate-middle">Saved!</span>`);
+                    $select.parent().append($badge);
+                    setTimeout(() => $badge.fadeOut(500, () => $badge.remove()), 2000);
+                },
+                error: function() {
+                    $select.removeClass('saving').prop('disabled', false)
+                        .siblings('.saving-indicator').remove();
+                    $select.val(originalStatus); // Revert to original value
+                    
+                    // Show error badge
+                    const $badge = $(`<span class="badge bg-danger position-absolute top-0 start-100 translate-middle">Error!</span>`);
+                    $select.parent().append($badge);
+                    setTimeout(() => $badge.fadeOut(500, () => $badge.remove()), 2000);
+                }
+            });
+        }
+    });
+
+    $('.save-description').on('click', function() {
+        const productId = $(this).data('id');
+        const productContent = $(this).closest('.modal-footer').siblings('.modal-body').find('textarea').val();
+        const button = $(this);
+        
+        button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
+        var currentUrl = window.location.href;
+        var baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
+
+        console.log(productId);
+        console.log(productContent);
+        
+        console.log(baseUrl + '/includes/save_product_content.php');
+        // AJAX request
+        $.ajax({
+            url: baseUrl + '/includes/save_product_content.php',
+            type: 'POST',
+            data: {
+                product_id: productId,
+                content: productContent
+            },
+            success: function(response) {
+                console.log('Raw response:', response); // Log the full response
+                try {
+                    var jsonResponse = JSON.parse(response);
+                    if (jsonResponse.status === 'success') {
+                        alert(jsonResponse.message);
+                    } else {
+                        alert('Error: ' + jsonResponse.message);
+                    }
+                } catch (e) {
+                    console.error('Parsing error:', e);
+                    alert('Unexpected response format.');
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('AJAX error:', textStatus, errorThrown);
+                alert('Error saving description: ' + errorThrown);
+            }
+        });
     });
 
 });

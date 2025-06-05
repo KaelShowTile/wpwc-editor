@@ -1,22 +1,18 @@
 <?php
 
 // save_product_attribute.php
-require_once __DIR__.'/functions.php';
-require_once __DIR__.'/includes/session_manager.php';
+require_once __DIR__.'/../functions.php';
+require_once __DIR__.'/session_manager.php';
 wpe_start_session();
 
 // Load WordPress environment
-$config = require __DIR__.'/includes/config.php';
+$config = require __DIR__.'/config.php';
 require_once $config['wordpress']['path'].'/wp-load.php';
 
 // Get POST data
 $product_id = $_POST['product_id'] ?? 0;
 $taxonomy = $_POST['taxonomy'] ?? '';
 $value = $_POST['value'] ?? '';
-
-wpe_log("product id is: " . $product_id);
-wpe_log("attribute: " . $taxonomy);
-wpe_log("new value is: " . $value);
 
 if (!$product_id || !$taxonomy) {
     echo json_encode(['success' => false, 'message' => 'Invalid data']);
@@ -39,13 +35,11 @@ try {
             
             if ($term) {
                 $term_id = $term['term_id'];
-                wpe_log("check id: " . $term_id);
                 wp_set_object_terms($product_id, $term_name, $taxonomy);
             }
             
             if (!is_wp_error($term) && isset($term['term_id'])) {
                 $term_ids[] = $term['term_id'];
-                wpe_log("check id: " . $term['term_id']);
             }
         }
 

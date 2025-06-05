@@ -49,7 +49,7 @@ header nav .menu-list .menu-item a:hover{color:#000;}
 .wpwc-list-container .term-item .form-check .form-check-label small.text-muted{font-size: 0.75rem; margin-top: -4px; color: #bbb ! IMPORTANT; font-weight: 300; letter-spacing: 0.5px;}
 
 /* product */
-#productsTable .product-thumb{width: 80px; height: 80px;}
+#productsTable .product-thumb{width: 40px; height: 40px;}
 #productsTable_filter{display: inline-block; position: absolute; top: -210px;}
 #thumb-col{max-width: 80px !important;}
 #status-col{max-width: 50px !important;}
@@ -64,6 +64,14 @@ header nav .menu-list .menu-item a:hover{color:#000;}
 .autocomplete-item {padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #eee; transition: background-color 0.2s; color:#000; font-size: 0.75rem;}
 .autocomplete-item:hover {background-color: #f0f5ff;}
 .autocomplete-item.highlighted {background-color: #f9f9f9; color: #000;}
+
+.edit-product-content .modal-dialog{width: 80%; max-width: 80%;}
+.edit-product-content .modal-dialog #ContentLabel{color: #000 !important; padding: 10px 30px;}
+.edit-product-content .modal-dialog .modal-header{border-bottom-width: 0;}
+.edit-product-content .modal-dialog .modal-header button.close{border-width: 0; background: transparent; font-size: 2rem;}
+.edit-product-content .modal-dialog .modal-body{padding: 0;}
+.edit-product-content .modal-dialog textarea{width: 100%; height: 70vh; padding: 40px 50px; border-color: #fafafa; background: #fafafa;}
+.edit-product-content .modal-dialog .modal-footer{border-top-width: 0;}
 
 /* responsive */
 @media (min-width: 1400px)
