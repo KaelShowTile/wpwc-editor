@@ -224,7 +224,6 @@ foreach ($active_taxonomies as $taxonomy) {
                         LEFT JOIN {$wpdb->postmeta} pm1 ON p.ID = pm1.post_id
                         WHERE p.post_type = 'product'
                         GROUP BY p.ID
-                        ORDER BY p.ID DESC
                     ");
 
                     // Get attribute values for each product
@@ -322,7 +321,7 @@ foreach ($active_taxonomies as $taxonomy) {
                                     </div>
                                     <div class="modal-body">
                                         <textarea data-id="<?= $product->ID ?>"><?= $product->post_content ?></textarea>
-                                        <p class="allow-html-tag">Allow HTML Tag: &lt;p&gt;, &lt;strong&gt;, &lt;em&gt;, &lt;a&gt;, &lt;b&gt;, &lt;br&gt;, &lt;span&gt;. &lt;img&gt;, &lt;h1&gt;, &lt;h2&gt;, &lt;h3&gt;, &lt;h4&gt;, &lt;h5&gt;, &lt;h6&gt;, &lt;div&gt;&lt;/p&gt;</p>
+                                        <p class="allow-html-tag">Allow HTML Tag: &lt;p&gt;, &lt;strong&gt;, &lt;em&gt;, &lt;a&gt;, &lt;b&gt;, &lt;br&gt;, &lt;span&gt;. &lt;img&gt;, &lt;h1&gt;, &lt;h2&gt;, &lt;h3&gt;, &lt;h4&gt;, &lt;h5&gt;, &lt;h6&gt;, &lt;div&gt;&lt;</p>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary save-description" data-bs-dismiss="modal" data-id="<?= $product->ID ?>">Save</button>
@@ -794,7 +793,6 @@ $(document).ready(function() {
         const productContent = $(this).closest('.modal-footer').siblings('.modal-body').find('textarea').val();
         const button = $(this);
         
-        button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
         var currentUrl = window.location.href;
         var baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
 

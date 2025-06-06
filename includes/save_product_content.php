@@ -2,21 +2,18 @@
 // save_product_stock.php
 require_once __DIR__.'/../functions.php';
 require_once __DIR__.'/session_manager.php';
+
 wpe_start_session();
 
 $config = require __DIR__.'/config.php';
 
 // Include WordPress configuration
 $wpConfigPath = $config['wordpress']['path'] . '/wp-config.php';
+$wpFormattingPath = $config['wordpress']['path'] . 'wp-includes/formatting.php';
+
 if (file_exists($wpConfigPath)) {
     include($wpConfigPath);
-} else {
-    die('WordPress config file not found.');
-}
-
-function sanitize_content($content) {
-    // Allow specific tags only
-    return strip_tags($content, '<p><strong><em><a><b><br><span><img><h1><h2><h3><h4><h5><h6><div>');
+    include($wpFormattingPath);
 }
 
 require_once $config['wordpress']['path'].'/wp-load.php';
@@ -36,7 +33,11 @@ try {
     // Check if input is set
     if (isset($_POST['product_id']) && isset($_POST['content'])) {
         $productId = intval($_POST['product_id']);
-        $newContent = sanitize_content($_POST['content']); 
+        $content = str_replace('\"', '"', $_POST['content']);
+        $newContent = wp_specialchars_decode($content, $quote_style = ENT_QUOTES); 
+
+        wpe_log($_POST['content']);
+        wpe_log($newContent);
 
         // Update the product description using the correct table prefix
         $stmt = $pdo->prepare("UPDATE {$tablePrefix}posts SET post_content = :content WHERE ID = :id");
