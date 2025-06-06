@@ -72,6 +72,7 @@ header nav .menu-list .menu-item a:hover{color:#000;}
 .edit-product-content .modal-dialog .modal-body{padding: 0;}
 .edit-product-content .modal-dialog textarea{width: 100%; height: 70vh; padding: 40px 50px; border-color: #fafafa; background: #fafafa;}
 .edit-product-content .modal-dialog .modal-footer{border-top-width: 0;}
+.allow-html-tag{color: #666; margin: 20px 50px 0; font-size: 1rem; font-style: italic;}
 
 /* responsive */
 @media (min-width: 1400px)

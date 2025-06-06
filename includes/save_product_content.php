@@ -14,6 +14,13 @@ if (file_exists($wpConfigPath)) {
     die('WordPress config file not found.');
 }
 
+function sanitize_content($content) {
+    // Allow specific tags only
+    return strip_tags($content, '<p><strong><em><a><b><br><span><img><h1><h2><h3><h4><h5><h6><div>');
+}
+
+require_once $config['wordpress']['path'].'/wp-load.php';
+
 // Database connection details from wp-config.php
 $host = DB_HOST;
 $dbname = DB_NAME;
@@ -29,7 +36,7 @@ try {
     // Check if input is set
     if (isset($_POST['product_id']) && isset($_POST['content'])) {
         $productId = intval($_POST['product_id']);
-        $newContent = $_POST['content']; // Make sure to sanitize this input
+        $newContent = sanitize_content($_POST['content']); 
 
         // Update the product description using the correct table prefix
         $stmt = $pdo->prepare("UPDATE {$tablePrefix}posts SET post_content = :content WHERE ID = :id");
