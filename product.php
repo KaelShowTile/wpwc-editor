@@ -231,7 +231,9 @@ foreach ($active_taxonomies as $taxonomy) {
                     foreach ($products as $product) {
                         foreach ($active_taxonomies as $taxonomy) {
                             $terms = wp_get_post_terms($product->ID, $taxonomy, ['fields' => 'names']);
-                            $product_attributes[$product->ID][$taxonomy] = implode(', ', $terms);
+                            if($terms){
+                                $product_attributes[$product->ID][$taxonomy] = implode(', ', $terms);
+                            }  
                         }
                     }
 
@@ -320,8 +322,8 @@ foreach ($active_taxonomies as $taxonomy) {
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <textarea data-id="<?= $product->ID ?>"><?= $product->post_content ?></textarea>
-                                        <p class="allow-html-tag">Allow HTML Tag: &lt;p&gt;, &lt;strong&gt;, &lt;em&gt;, &lt;a&gt;, &lt;b&gt;, &lt;br&gt;, &lt;span&gt;. &lt;img&gt;, &lt;h1&gt;, &lt;h2&gt;, &lt;h3&gt;, &lt;h4&gt;, &lt;h5&gt;, &lt;h6&gt;, &lt;div&gt;&lt;</p>
+                                        <textarea data-id="<?= $product->ID ?>"><?= htmlspecialchars($product->post_content, ENT_QUOTES) ?></textarea>
+                                        
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary save-description" data-bs-dismiss="modal" data-id="<?= $product->ID ?>">Save</button>

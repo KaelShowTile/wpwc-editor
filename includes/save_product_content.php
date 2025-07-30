@@ -9,11 +9,9 @@ $config = require __DIR__.'/config.php';
 
 // Include WordPress configuration
 $wpConfigPath = $config['wordpress']['path'] . '/wp-config.php';
-$wpFormattingPath = $config['wordpress']['path'] . 'wp-includes/formatting.php';
 
 if (file_exists($wpConfigPath)) {
     include($wpConfigPath);
-    include($wpFormattingPath);
 }
 
 require_once $config['wordpress']['path'].'/wp-load.php';
@@ -33,6 +31,7 @@ try {
     // Check if input is set
     if (isset($_POST['product_id']) && isset($_POST['content'])) {
         $productId = intval($_POST['product_id']);
+        $content = str_replace('\"', '"', $_POST['content']);
         $content = str_replace('\"', '"', $_POST['content']);
         $newContent = wp_specialchars_decode($content, $quote_style = ENT_QUOTES); 
 
