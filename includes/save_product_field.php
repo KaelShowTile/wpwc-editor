@@ -18,9 +18,13 @@ if (!$product_id || !$field) {
 $config = require __DIR__.'/config.php';
 require_once $config['wordpress']['path'].'/wp-load.php';
 
-// Handle different field types
 try {
-    // For post title
+    // Get WooCommerce product object
+    $product = wc_get_product($product_id);
+    if (!$product) {
+        throw new Exception('Product not found');
+    }
+
     if ($field === 'post_title') {
         $result = wp_update_post([
             'ID' => $product_id,
@@ -31,28 +35,45 @@ try {
             throw new Exception($result->get_error_message());
         }
     } 
-    // For meta fields
+    // Handle price updates using WooCommerce methods
+    elseif ($field === '_regular_price' || $field === '_sale_price') {
+        // Format and validate price
+        $price_value = is_numeric($value) ? wc_format_decimal($value) : '';
+        
+        if ($field === '_regular_price') {
+            $product->set_regular_price($price_value);
+        } elseif ($field === '_sale_price') {
+            $product->set_sale_price($price_value);
+        }
+        
+        // Recalculate price display values
+        if ($product->get_sale_price() && $product->get_sale_price() < $product->get_regular_price()) {
+            $product->set_price($product->get_sale_price());
+        } else {
+            $product->set_price($product->get_regular_price());
+            $product->set_sale_price('');
+        }
+        
+        $product->save();
+    }
+    // Handle other meta fields
     else {
-        // Sanitize based on field type
         switch ($field) {
             case '_sku':
                 $sanitized_value = sanitize_text_field($value);
-                break;
-            case '_regular_price':
-            case '_sale_price':
-                $sanitized_value = is_numeric($value) ? wc_format_decimal($value) : '';
+                $product->set_sku($sanitized_value);
+                $product->save();
                 break;
             default:
                 $sanitized_value = sanitize_text_field($value);
+                update_post_meta($product_id, $field, $sanitized_value);
         }
-        
-        update_post_meta($product_id, $field, $sanitized_value);
     }
     
-    // Clear product cache
-    if (function_exists('wc_delete_product_transients')) {
-        wc_delete_product_transients($product_id);
-    }
+    // Clear all relevant caches
+    //wc_delete_product_transients($product_id);
+    clean_post_cache($product_id);
+    //wp_cache_flush();
     
     echo json_encode(['success' => true]);
 } catch (Exception $e) {

@@ -35,8 +35,11 @@ class AttributeStorage {
     
     refreshFromServer() {
         console.log('Refreshing attribute terms from server...');
+        var currentUrl = window.location.href;
+        var baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
+        
         $.ajax({
-            url: 'refresh_attribute_terms.php',
+            url: baseUrl + '/includes/refresh_attribute_terms.php',
             method: 'GET',
             dataType: 'json',
             success: (data) => {

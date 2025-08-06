@@ -4,6 +4,7 @@ $pageTitle = "Products";
 
 require_once __DIR__.'/includes/header.php'; 
 require_once __DIR__.'/includes/config.php';
+require_once __DIR__.'/includes/load_intergrations.php';
 
 // Load WordPress environment
 require_once $config['wordpress']['path'].'/wp-load.php';
@@ -39,7 +40,8 @@ foreach ($active_taxonomies as $taxonomy) {
     $taxonomy_names[$taxonomy] = $name;
 }
 
-
+//load active plugin
+$savedPlugins = get_actived_plugins($config['db']['host'], $config['db']['name'], $config['db']['prefix'], $config['db']['user'], $config['db']['password']);
 
 ?>
 
@@ -203,11 +205,15 @@ foreach ($active_taxonomies as $taxonomy) {
                         <th width="120">Stock</th>
                         <th width="120">Description</th>
                         <?php foreach ($active_taxonomies as $taxonomy): ?>
-                            <th width="150" data-taxonomy="<?= esc_attr($taxonomy) ?>">
-                                <?= esc_html($taxonomy_names[$taxonomy]) ?>
-                            </th>
+                        <th width="150" data-taxonomy="<?= esc_attr($taxonomy) ?>">
+                        <?= esc_html($taxonomy_names[$taxonomy]) ?>
+                        </th>
                         <?php endforeach; ?>
                         <th width="80" id="status-col">Status</th>
+                        <?php if(is_plugin_actived("glint-product-quantity", $savedPlugins)):?>
+                        <th width="120">Step</th>
+                        <th width="120">Suffix</th>
+                        <?php endif; ?>
                         <th width="100">Actions</th>
                     </tr>
                 </thead>
@@ -226,14 +232,14 @@ foreach ($active_taxonomies as $taxonomy) {
                         GROUP BY p.ID
                     ");
 
-                    // Get attribute values for each product
                     $product_attributes = [];
                     foreach ($products as $product) {
+                        // Get attribute values for each product
                         foreach ($active_taxonomies as $taxonomy) {
                             $terms = wp_get_post_terms($product->ID, $taxonomy, ['fields' => 'names']);
-                            if($terms){
+                            if(is_array($terms)){
                                 $product_attributes[$product->ID][$taxonomy] = implode(', ', $terms);
-                            }  
+                            }
                         }
                     }
 
@@ -363,6 +369,31 @@ foreach ($active_taxonomies as $taxonomy) {
                             <span class="badge bg-success">Published</span>
                         </td>
 
+                        <!-- Glint Product Quantity -->
+                        <?php if(is_plugin_actived("glint-product-quantity", $savedPlugins)):?>
+
+                        <!-- Step -->
+                        <td>
+                            <div class="editable-field price-field" 
+                                contenteditable="true"
+                                data-field="_quantity_step"
+                                data-productid="<?= $product->ID ?>"
+                                data-original="">
+                                
+                            </div>
+                        </td>
+                        <!-- Suffix -->
+                        <td>
+                            <div class="editable-field price-field" 
+                                contenteditable="true"
+                                data-field="_quantity_suffix"
+                                data-productid="<?= $product->ID ?>"
+                                data-original="">
+                                
+                            </div>
+                        </td>
+                        <?php endif; ?>
+
                         <!-- Buttons -->
                         <td>
                             <a href= "<?= $config['wordpress']['url'] ?>wp-admin/post.php?post=<?= $product->ID ?>&action=edit" class="btn btn-sm btn-outline-primary edit-btn" target="_blank">
@@ -395,7 +426,6 @@ foreach ($active_taxonomies as $taxonomy) {
 
 <script type="text/javascript" src="<?php echo tool_url('/assets/js/products.js'); ?>" id="products-js"></script>
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>

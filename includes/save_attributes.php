@@ -1,8 +1,7 @@
 <?php
-
 // save_attributes.php
-require_once __DIR__.'/functions.php';
-require_once __DIR__.'/includes/session_manager.php';
+require_once __DIR__.'/../functions.php';
+require_once __DIR__.'/session_manager.php';
 wpe_start_session();
 
 header('Content-Type: application/json');
@@ -24,7 +23,7 @@ if (!isset($data['terms']) || !is_array($data['terms']) ||
 }
 
 // Load configuration
-$config = require __DIR__.'/includes/config.php';
+$config = require __DIR__.'/config.php';
 
 try {
     // Connect to program's database
@@ -87,13 +86,13 @@ try {
         $db->rollBack();
     }
     
-    error_log('Database error in save_attributes.php: ' . $e->getMessage());
+    wpe_log('Database error in save_attributes.php: ' . $e->getMessage());
     echo json_encode([
         'success' => false, 
         'message' => 'Database error: ' . $e->getMessage()
     ]);
 } catch (Exception $e) {
-    error_log('Error in save_attributes.php: ' . $e->getMessage());
+    wpe_log('Error in save_attributes.php: ' . $e->getMessage());
     echo json_encode([
         'success' => false, 
         'message' => 'Error: ' . $e->getMessage()

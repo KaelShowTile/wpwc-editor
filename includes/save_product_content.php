@@ -35,9 +35,6 @@ try {
         $content = str_replace('\"', '"', $_POST['content']);
         $newContent = wp_specialchars_decode($content, $quote_style = ENT_QUOTES); 
 
-        wpe_log($_POST['content']);
-        wpe_log($newContent);
-
         // Update the product description using the correct table prefix
         $stmt = $pdo->prepare("UPDATE {$tablePrefix}posts SET post_content = :content WHERE ID = :id");
         $stmt->bindParam(':content', $newContent);

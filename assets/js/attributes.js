@@ -30,10 +30,13 @@ document.addEventListener('DOMContentLoaded', function() {
             taxonomies: selectedTaxonomies 
         };
 
-        console.log('Data to send:', JSON.stringify(dataToSend, null, 2));
+        // Get base URL - more reliable method
+        const currentPath = window.location.pathname;
+        const basePath = currentPath.substring(0, currentPath.lastIndexOf('/'));
+        const url = window.location.origin + basePath + '/includes/save_attributes.php';
 
         // Send to server
-        fetch('save_attributes.php', {
+        fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

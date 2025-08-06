@@ -1,8 +1,11 @@
 <?php
 // refresh_attribute_terms.php
-require_once __DIR__.'/functions.php';
-require_once __DIR__.'/includes/session_manager.php';
+require_once __DIR__.'/../functions.php';
+require_once __DIR__.'/session_manager.php';
 wpe_start_session();
+
+// Load configuration
+$config = require __DIR__.'/config.php';
 
 // Load WordPress environment
 require_once $config['wordpress']['path'].'/wp-load.php';
