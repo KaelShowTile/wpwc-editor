@@ -8,9 +8,6 @@ wpe_start_session();
 $product_id = $_POST['product_id'] ?? 0;
 $status = $_POST['status'] ?? '';
 
-wpe_log("Product ID: " . $product_id);
-wpe_log("Stock: " . $status);
-
 if (!$product_id || !in_array($status, ['instock', 'outofstock', 'onbackorder'])) {
     echo json_encode(['success' => false, 'message' => 'Invalid data']);
     exit;
