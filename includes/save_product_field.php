@@ -56,6 +56,28 @@ try {
         
         $product->save();
     }
+    // Handle shipping dimensions
+    elseif (in_array($field, ['_weight', '_length', '_width', '_height'])) {
+        // Validate as positive number
+        $sanitized_value = is_numeric($value) && $value >= 0 ? wc_format_decimal($value) : '';
+        
+        switch ($field) {
+            case '_weight':
+                $product->set_weight($sanitized_value);
+                break;
+            case '_length':
+                $product->set_length($sanitized_value);
+                break;
+            case '_width':
+                $product->set_width($sanitized_value);
+                break;
+            case '_height':
+                $product->set_height($sanitized_value);
+                break;
+        }
+        
+        $product->save();
+    }
     // Handle other meta fields
     else {
         switch ($field) {
@@ -71,9 +93,7 @@ try {
     }
     
     // Clear all relevant caches
-    //wc_delete_product_transients($product_id);
     clean_post_cache($product_id);
-    //wp_cache_flush();
     
     echo json_encode(['success' => true]);
 } catch (Exception $e) {

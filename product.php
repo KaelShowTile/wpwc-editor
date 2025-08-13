@@ -210,6 +210,10 @@ if(is_plugin_actived("glint-product-quantity", $savedPlugins)){
                         <th width="100">Sale Price</th>
                         <th width="120">Stock</th>
                         <th width="120">Description</th>
+                        <th width="80">Weight</th>
+                        <th width="80">Length</th>
+                        <th width="80">Width</th>
+                        <th width="80">Height</th>
                         <?php foreach ($active_taxonomies as $taxonomy): ?>
                         <th width="150" data-taxonomy="<?= esc_attr($taxonomy) ?>">
                         <?= esc_html($taxonomy_names[$taxonomy]) ?>
@@ -217,8 +221,8 @@ if(is_plugin_actived("glint-product-quantity", $savedPlugins)){
                         <?php endforeach; ?>
                         <th width="80" id="status-col">Status</th>
                         <?php if($glint_product_quantity_active == true):?>
-                        <th width="120">Step</th>
-                        <th width="120">Suffix</th>
+                        <th width="100">Step</th>
+                        <th width="100">Suffix</th>
                         <?php endif; ?>
                         <th width="100">Actions</th>
                     </tr>
@@ -234,6 +238,10 @@ if(is_plugin_actived("glint-product-quantity", $savedPlugins)){
                             MAX(CASE WHEN pm1.meta_key = '_regular_price' THEN pm1.meta_value END) AS regular_price,
                             MAX(CASE WHEN pm1.meta_key = '_sale_price' THEN pm1.meta_value END) AS sale_price,
                             MAX(CASE WHEN pm1.meta_key = '_stock_status' THEN pm1.meta_value END) AS stock_status,
+                            MAX(CASE WHEN pm1.meta_key = '_weight' THEN pm1.meta_value END) AS weight,
+                            MAX(CASE WHEN pm1.meta_key = '_length' THEN pm1.meta_value END) AS length,
+                            MAX(CASE WHEN pm1.meta_key = '_width' THEN pm1.meta_value END) AS width,
+                            MAX(CASE WHEN pm1.meta_key = '_height' THEN pm1.meta_value END) AS height,
                             MAX(CASE WHEN pm1.meta_key = '_thumbnail_id' THEN pm1.meta_value END) AS thumbnail_id";
                     
                     if($glint_product_quantity_active == true){
@@ -363,6 +371,18 @@ if(is_plugin_actived("glint-product-quantity", $savedPlugins)){
                                 </div>
                             </div>
                         </td>
+                        
+                        <!-- Weight -->
+                        <td class="editable-cell" contenteditable="true" data-field="_weight" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->weight) ?>"><?= esc_html($product->weight) ?></td>
+
+                        <!-- length -->
+                        <td class="editable-cell" contenteditable="true" data-field="_length" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->length) ?>"><?= esc_html($product->length) ?></td>
+
+                        <!-- width -->
+                        <td class="editable-cell" contenteditable="true" data-field="_width" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->width) ?>"><?= esc_html($product->width) ?></td>
+
+                        <!-- height -->
+                        <td class="editable-cell" contenteditable="true" data-field="_height" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->height) ?>"><?= esc_html($product->height) ?></td>
 
                         <!-- Attribute -->
                         <?php foreach ($active_taxonomies as $taxonomy): 
