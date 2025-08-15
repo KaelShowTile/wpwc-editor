@@ -214,6 +214,7 @@ if(is_plugin_actived("glint-product-quantity", $savedPlugins)){
                         <th width="80">Length</th>
                         <th width="80">Width</th>
                         <th width="80">Height</th>
+                        <th width="80">Unit/Pallet</th>
                         <?php foreach ($active_taxonomies as $taxonomy): ?>
                         <th width="150" data-taxonomy="<?= esc_attr($taxonomy) ?>">
                         <?= esc_html($taxonomy_names[$taxonomy]) ?>
@@ -242,6 +243,7 @@ if(is_plugin_actived("glint-product-quantity", $savedPlugins)){
                             MAX(CASE WHEN pm1.meta_key = '_length' THEN pm1.meta_value END) AS length,
                             MAX(CASE WHEN pm1.meta_key = '_width' THEN pm1.meta_value END) AS width,
                             MAX(CASE WHEN pm1.meta_key = '_height' THEN pm1.meta_value END) AS height,
+                            MAX(CASE WHEN pm1.meta_key = 'unitperpallet' THEN pm1.meta_value END) AS pallet,
                             MAX(CASE WHEN pm1.meta_key = '_thumbnail_id' THEN pm1.meta_value END) AS thumbnail_id";
                     
                     if($glint_product_quantity_active == true){
@@ -383,6 +385,9 @@ if(is_plugin_actived("glint-product-quantity", $savedPlugins)){
 
                         <!-- height -->
                         <td class="editable-cell" contenteditable="true" data-field="_height" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->height) ?>"><?= esc_html($product->height) ?></td>
+
+                        <!-- Unit Per Pallet -->
+                        <td class="editable-cell" contenteditable="true" data-field="unitperpallet" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->pallet) ?>"><?= esc_html($product->pallet) ?></td>
 
                         <!-- Attribute -->
                         <?php foreach ($active_taxonomies as $taxonomy): 
