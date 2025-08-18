@@ -35,14 +35,6 @@ function getRootUrl() {
     return $protocol . $host;
 }
 
-// Usage:
-try {
-    $rootIndexUrl = getRootUrl();
-    echo $rootIndexUrl; // Output: https://example.com/index.php
-} catch (Exception $e) {
-    die($e->getMessage());
-}
-
 //Error Log
 function wpe_log($message) {
     $log_file = __DIR__.'/debug.log';
