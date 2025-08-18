@@ -26,6 +26,9 @@ table.dataTable thead>tr>th.sorting, table.dataTable thead>tr>th.sorting_asc, ta
 
 table.dataTable thead>tr>th.sorting:before, table.dataTable thead>tr>th.sorting:after, table.dataTable thead>tr>th.sorting_asc:before, table.dataTable thead>tr>th.sorting_asc:after, table.dataTable thead>tr>th.sorting_desc:before, table.dataTable thead>tr>th.sorting_desc:after, table.dataTable thead>tr>th.sorting_asc_disabled:before, table.dataTable thead>tr>th.sorting_asc_disabled:after, table.dataTable thead>tr>th.sorting_desc_disabled:before, table.dataTable thead>tr>th.sorting_desc_disabled:after, table.dataTable thead>tr>td.sorting:before, table.dataTable thead>tr>td.sorting:after, table.dataTable thead>tr>td.sorting_asc:before, table.dataTable thead>tr>td.sorting_asc:after, table.dataTable thead>tr>td.sorting_desc:before, table.dataTable thead>tr>td.sorting_desc:after, table.dataTable thead>tr>td.sorting_asc_disabled:before, table.dataTable thead>tr>td.sorting_asc_disabled:after, table.dataTable thead>tr>td.sorting_desc_disabled:before, table.dataTable thead>tr>td.sorting_desc_disabled:after{  left: 6px; right: auto;}
 
+.wpwc-list-container .action-bar button{padding: 7px 15px 5px;}
+.wpwc-list-container .action-bar i.fas{margin-right: 0 !important;}
+
 
 /* header */
 header{display: inline-block; width: 100%; margin-bottom: 20px; background: #fafafa;}
@@ -46,7 +49,7 @@ header nav .menu-list .menu-item a:hover{color:#000;}
 .wpwc-intro-container .card.stats-card i.fas{margin-right: 10px;}
 .wpwc-intro-container .card.stats-card .stats-number{font-size: 1.5rem; font-weight: 600; margin-right: 5px;}
 .wpwc-intro-container .card.stats-card .stats-label{font-size: 1.5rem;}
-.wpwc-list-container .action-bar{background: #f9f9f9; padding: 40px 25px 25px;}
+.wpwc-list-container .action-bar{background: #f9f9f9; padding: 25px;}
 .wpwc-list-container .action-bar .search-box input{font-size: 1rem; padding-left: 42px;}
 .wpwc-list-container .action-bar .search-box .fa-search{position: absolute; font-size: 1.2rem; margin: 10px 0 0 15px; color: #333;}
 .wpwc-list-container .accordion-button{background: #fafafa; padding: 20px 40px; border-radius: 0 !important;}
@@ -61,10 +64,19 @@ header nav .menu-list .menu-item a:hover{color:#000;}
 
 /* product */
 #productsTable .product-thumb{width: 40px; height: 40px;}
-#productsTable_filter{display: inline-block; position: absolute; top: -210px;}
+#productsTable_filter{display: inline-block; position: absolute; top: -175px;}
+#productsTable_filter .form-control.form-control-sm{margin-left: 30px; width: 400px;}
 #thumb-col{max-width: 80px !important;}
 #status-col{max-width: 50px !important;}
 #title-col{min-width: 200px;}
+
+.column-control-container{margin-bottom: 10px;}
+.column-control-container p{margin-bottom: 5px;}
+.column-control-container .row{margin: 0; padding: 20px 30px 10px; background: #f9f9f9; border-top: 1px dashed #e8e8e8;}
+.column-control-container ul{padding: 0 12px;}
+.column-control-container ul li{list-style: none; display: inline-block; padding-right: 20px;}
+.column-control-container ul li input{height: 1.25rem; width: 1.25rem; margin-top: 2px; position: absolute;}
+.column-control-container ul li span{margin: 0 0 0 25px;}
 
 .attribute-cell {position: relative; cursor: pointer; min-height: 40px; padding: 5px !important;}
 .attribute-value {padding: 5px; min-height: 30px;}

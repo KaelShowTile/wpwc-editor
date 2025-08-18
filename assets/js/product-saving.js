@@ -432,5 +432,122 @@ $(document).ready(function() {
             }
         });
     });
+     var updateColumn = debounce(function(){
+        console.log('update cols');
+
+        var isPriceChecked = $('#hide-price-col').is(':checked');
+        var isStockChecked = $('#hide-stock-col').is(':checked');
+        var isDesChecked = $('#hide-description-col').is(':checked');
+        var isShippingChecked = $('#hide-shipping-col').is(':checked');
+        var isAttrChecked = $('#hide-attribute-col').is(':checked');
+        var isQtyChecked = $('#hide-quantity-col').is(':checked');
+        var isSampleChecked = $('#hide-sample-product').is(':checked');
+
+        if(isPriceChecked == false){
+            $('.price-col').hide();
+        }
+
+        if(isStockChecked == false){
+            $('.stock-col').hide();
+        }
+       
+        if(isDesChecked == false){
+            $('.description-col').hide();
+        }
+
+        if(isShippingChecked == false){
+            $('.shipping-col').hide();
+        }
+
+        if(isAttrChecked == false){
+            $('.attribute-col').hide();
+        }
+
+        if(isQtyChecked == false){
+            $('.quantity-col').hide();
+        }
+
+        if(isSampleChecked== false){
+            $('.sample-product-row').hide();
+        }
+    }, 0);
+
+    function debounce(func, wait) {
+        let timeout;
+        return function() {
+            const context = this;
+            const args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                func.apply(context, args);
+            }, wait);
+        };
+    }
+
+    table.on('page.dt', updateColumn);
+    table.on('length.dt', updateColumn);
+
+    $('#hide-price-col').change(function(){
+        var isChecked = $(this).is(':checked');
+        if(isChecked == false){
+            $('.price-col').hide();
+        }else{
+            $('.price-col').show();
+        }
+    });
+
+    $('#hide-stock-col').change(function(){
+        var isChecked = $(this).is(':checked');
+        if(isChecked == false){
+            $('.stock-col').hide();
+        }else{
+            $('.stock-col').show();
+        }
+    });
+
+    $('#hide-description-col').change(function(){
+        var isChecked = $(this).is(':checked');
+        if(isChecked == false){
+            $('.description-col').hide();
+        }else{
+            $('.description-col').show();
+        }
+    });
+
+    $('#hide-shipping-col').change(function(){
+        var isChecked = $(this).is(':checked');
+        if(isChecked == false){
+            $('.shipping-col').hide();
+        }else{
+            $('.shipping-col').show();
+        }
+    });
+
+    $('#hide-attribute-col').change(function(){
+        var isChecked = $(this).is(':checked');
+        if(isChecked == false){
+            $('.attribute-col').hide();
+        }else{
+            $('.attribute-col').show();
+        }
+    });
+
+    $('#hide-quantity-col').change(function(){
+        var isChecked = $(this).is(':checked');
+        if(isChecked == false){
+            $('.quantity-col').hide();
+        }else{
+            $('.quantity-col').show();
+        }
+    });
+
+    $('#hide-sample-product').change(function(){
+        var isChecked = $(this).is(':checked');
+        if(isChecked == false){
+            $('.sample-product-row').hide();
+        }else{
+            $('.sample-product-row').show();
+        }
+    });
 
 });

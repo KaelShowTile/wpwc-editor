@@ -1,6 +1,6 @@
 <?php 
 
-$pageTitle = " Setting";
+$pageTitle = "Setting";
 
 require_once __DIR__.'/includes/header.php'; 
 require_once __DIR__.'/includes/config.php';
@@ -95,7 +95,7 @@ $savedPlugins = get_actived_plugins($config['db']['host'], $config['db']['name']
                             <input class="plugin-check-input" type="checkbox" value="yoast-seo" id="attrCheck0" <?= is_plugin_actived("yoast-seo", $savedPlugins) ? 'checked' : '' ?>>
                         </div>
                         <div class="plugin-info">
-                            <img src="/wpwc-editor/assets/img/yoast.jpg">
+                            <img src="<?php echo tool_url('/assets/img/yoast.jpg'); ?>">
                             <h5>Yoast SEO</h5>
                         </div>
                     </li>
@@ -104,7 +104,7 @@ $savedPlugins = get_actived_plugins($config['db']['host'], $config['db']['name']
                             <input class="plugin-check-input" type="checkbox" value="acf" id="attrCheck0" <?= is_plugin_actived("acf", $savedPlugins) ? 'checked' : '' ?>>
                         </div>
                         <div class="plugin-info">
-                            <img src="/wpwc-editor/assets/img/acf.jpg">
+                            <img src="<?php echo tool_url('/assets/img/acf.jpg'); ?>">
                             <h5>Advanced Custom Fields</h5>
                         </div>
                     </li>
@@ -113,8 +113,18 @@ $savedPlugins = get_actived_plugins($config['db']['host'], $config['db']['name']
                             <input class="plugin-check-input" type="checkbox" value="glint-product-quantity" id="attrCheck0" <?= is_plugin_actived("glint-product-quantity", $savedPlugins) ? 'checked' : '' ?>>
                         </div>
                         <div class="plugin-info">
-                            <img src="/wpwc-editor/assets/img/glint-quantity.jpg">
+                            <img src="<?php echo tool_url('/assets/img/glint-quantity.jpg'); ?>">
                             <h5>GTO Quantity</h5>
+                        </div>
+                    </li>
+
+                    <li class="avaiable-plugin-item">
+                        <div class="form-check me-2">
+                            <input class="plugin-check-input" type="checkbox" value="glint-sample-product" id="attrCheck0" <?= is_plugin_actived("glint-sample-product", $savedPlugins) ? 'checked' : '' ?>>
+                        </div>
+                        <div class="plugin-info">
+                            <img src="<?php echo tool_url('/assets/img/glint-sample.jpg'); ?>">
+                            <h5>CHT Sample Product</h5>
                         </div>
                     </li>
                 </ul>

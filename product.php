@@ -48,13 +48,38 @@ if(is_plugin_actived("glint-product-quantity", $savedPlugins)){
     $glint_product_quantity_active = true;
 }
 
+$glint_sample_product_active = false;
+if(is_plugin_actived("glint-sample-product", $savedPlugins)){
+    $glint_sample_product_active = true;
+}
 
 ?>
-
 <!-- CSS for product table -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css">
+
+<script>
+    // Store attribute terms in localStorage
+    const attributeTerms = <?= $attribute_terms_json ?>;
+    localStorage.setItem('attributeTerms', JSON.stringify(attributeTerms));
+    localStorage.setItem('attributeTermsTimestamp', Date.now());
+    
+    // Set expiration (1 hour)
+    localStorage.setItem('attributeTermsExpiration', 3600000);
+</script>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
+<script type="text/javascript" src="<?php echo tool_url('/assets/js/products.js'); ?>" id="products-js"></script>
+<script type="text/javascript" src="<?php echo tool_url('/assets/js/product-saving.js'); ?>" id="product-saving-js"></script>
+
+<?php if($glint_product_quantity_active == true): ?>
+<script type="text/javascript" src="<?php echo tool_url('/assets/js/glint-quantity-saving.js'); ?>" id="glint-quantity-saving-js"></script>
+<?php endif; ?>
 
 <div class="container">
 
@@ -142,7 +167,7 @@ if(is_plugin_actived("glint-product-quantity", $savedPlugins)){
 </div>
 
 <!-- Bulk Edit Panel -->
-<div class="bulk-edit-panel" id="bulkEditPanel">
+<div class="bulk-edit-panel hide-this-area" id="bulkEditPanel">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center">
             <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Bulk Edit</h5>
@@ -195,6 +220,25 @@ if(is_plugin_actived("glint-product-quantity", $savedPlugins)){
     </div>
 </div>
 
+<div class="container column-control-container">
+    <div class="row">
+        <p>Show/hide columns</p>
+        <ul>
+            <li><input class="column-check-input" type="checkbox" value="show" id="hide-price-col" checked=""><span>Pirce</span></li>
+            <li><input class="column-check-input" type="checkbox" value="show" id="hide-stock-col" checked=""><span>Stock</span></li>
+            <li><input class="column-check-input" type="checkbox" value="show" id="hide-description-col" checked=""><span>Description</span></li>
+            <li><input class="column-check-input" type="checkbox" value="show" id="hide-shipping-col" checked=""><span>Shipping</span></li>
+            <li><input class="column-check-input" type="checkbox" value="show" id="hide-attribute-col" checked=""><span>Attribute</span></li>
+            <?php if($glint_product_quantity_active == true): ?>
+            <li><input class="column-check-input" type="checkbox" value="show" id="hide-quantity-col" checked=""><span>Quantity</span></li>
+            <?php endif; ?>
+            <?php if($glint_sample_product_active == true): ?>
+            <li><input class="column-check-input" type="checkbox" value="show" id="hide-sample-product" checked=""><span>Sample Product</span></li>
+            <?php endif; ?>
+        </ul>
+    </div>
+</div>
+
 <div class="container wpwc-list-container">
     <!-- Products Table -->
     <div class="card">
@@ -206,24 +250,24 @@ if(is_plugin_actived("glint-product-quantity", $savedPlugins)){
                         <th width="80" id="thumb-col">Image</th>
                         <th id="title-col">Product Name</th>
                         <th width="120" class="hide-this-area">SKU</th>
-                        <th width="100">Price</th>
-                        <th width="100">Sale Price</th>
-                        <th width="120">Stock</th>
-                        <th width="120">Description</th>
-                        <th width="80">Weight</th>
-                        <th width="80">Length</th>
-                        <th width="80">Width</th>
-                        <th width="80">Height</th>
-                        <th width="80">Unit/Pallet</th>
+                        <th width="100" class="price-col">Price</th>
+                        <th width="100" class="price-col">Sale Price</th>
+                        <th width="120" class="stock-col">Stock</th>
+                        <th width="120" class="description-col">Description</th>
+                        <th width="80" class="shipping-col">Weight</th>
+                        <th width="80" class="shipping-col">Length</th>
+                        <th width="80" class="shipping-col">Width</th>
+                        <th width="80" class="shipping-col">Height</th>
+                        <th width="80" class="shipping-col">Unit/Pallet</th>
                         <?php foreach ($active_taxonomies as $taxonomy): ?>
-                        <th width="150" data-taxonomy="<?= esc_attr($taxonomy) ?>">
+                        <th width="150" class="attribute-col" data-taxonomy="<?= esc_attr($taxonomy) ?>">
                         <?= esc_html($taxonomy_names[$taxonomy]) ?>
                         </th>
                         <?php endforeach; ?>
                         <th width="80" id="status-col">Status</th>
                         <?php if($glint_product_quantity_active == true):?>
-                        <th width="100">Step</th>
-                        <th width="100">Suffix</th>
+                        <th width="100" class="quantity-col">Step</th>
+                        <th width="100" class="quantity-col">Suffix</th>
                         <?php endif; ?>
                         <th width="100">Actions</th>
                     </tr>
@@ -295,6 +339,7 @@ if(is_plugin_actived("glint-product-quantity", $savedPlugins)){
                     
                     foreach ($products as $product) :
                         $thumbnail_url = '';
+                        
                         if ($product->thumbnail_id) {
                             $thumbnail_url = wp_get_attachment_thumb_url($product->thumbnail_id);
                         }
@@ -302,8 +347,23 @@ if(is_plugin_actived("glint-product-quantity", $savedPlugins)){
                         if (!$thumbnail_url) {
                             $thumbnail_url = 'https://placehold.co/80x80';
                         }
+
+                        $is_sample_product = false;
+
+                        if($glint_product_quantity_active == true){
+                            $prefix = "Sample of";
+                            if (strncmp($product->post_title, $prefix, strlen($prefix)) === 0) {
+                                 $is_sample_product = true;
+                            }
+                        }
+                        
                     ?>
-                    <tr data-id="<?= $product->ID ?>">
+
+                    <?php if($is_sample_product == false): ?>
+                    <tr data-id="<?= $product->ID ?>" >
+                    <?php else: ?>
+                    <tr data-id="<?= $product->ID ?>" class="sample-product-row">
+                    <?php endif; ?>
 
                         <!-- Product ID -->
                         <td class="editable-cell" data-field="id"><?= $product->ID ?></td>
@@ -318,7 +378,7 @@ if(is_plugin_actived("glint-product-quantity", $savedPlugins)){
                         <td class="editable-cell hide-this-area" data-field="_sku" contenteditable="true" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->sku) ?>"><?= esc_html($product->sku) ?></td>
 
                         <!-- Price -->
-                        <td>
+                        <td class="price-col">
                             <div class="editable-field price-field" 
                                 contenteditable="true"
                                 data-field="_regular_price"
@@ -329,7 +389,7 @@ if(is_plugin_actived("glint-product-quantity", $savedPlugins)){
                         </td>
                         
                         <!-- Sales Price -->
-                        <td>
+                        <td class="price-col">
                             <div class="editable-field price-field" 
                                 contenteditable="true"
                                 data-field="_sale_price"
@@ -340,7 +400,7 @@ if(is_plugin_actived("glint-product-quantity", $savedPlugins)){
                         </td>
                         
                         <!-- Stock Status -->
-                        <td class="editable-cel" data-field="stock_status" data-productid="<?= $product->ID ?>">
+                        <td class="editable-cel stock-col" data-field="stock_status" data-productid="<?= $product->ID ?>">
                             <select class="form-select stock-status-select" id="bulkStockStatus" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->stock_status) ?>">
                                 <option value="instock" <?= strtolower($product->stock_status) === 'instock' ? 'selected' : '' ?>>instock</option>
                                 <option value="outofstock" <?= strtolower($product->stock_status) === 'outofstock' ? 'selected' : '' ?>>outofstock</option>
@@ -349,7 +409,7 @@ if(is_plugin_actived("glint-product-quantity", $savedPlugins)){
                         </td>
 
                         <!-- Product Content -->
-                        <td class="edit-product-content">
+                        <td class="edit-product-content description-col">
                             <!-- button -->
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit-content-<?= $product->ID ?>" data-id="<?= $product->ID ?>" data-content="<?= esc_attr($product->post_content) ?>">Edit</button>
                             <!-- modal -->
@@ -375,25 +435,25 @@ if(is_plugin_actived("glint-product-quantity", $savedPlugins)){
                         </td>
                         
                         <!-- Weight -->
-                        <td class="editable-cell" contenteditable="true" data-field="_weight" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->weight) ?>"><?= esc_html($product->weight) ?></td>
+                        <td class="editable-cell shipping-col" contenteditable="true" data-field="_weight" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->weight) ?>"><?= esc_html($product->weight) ?></td>
 
                         <!-- length -->
-                        <td class="editable-cell" contenteditable="true" data-field="_length" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->length) ?>"><?= esc_html($product->length) ?></td>
+                        <td class="editable-cell shipping-col" contenteditable="true" data-field="_length" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->length) ?>"><?= esc_html($product->length) ?></td>
 
                         <!-- width -->
-                        <td class="editable-cell" contenteditable="true" data-field="_width" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->width) ?>"><?= esc_html($product->width) ?></td>
+                        <td class="editable-cell shipping-col" contenteditable="true" data-field="_width" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->width) ?>"><?= esc_html($product->width) ?></td>
 
                         <!-- height -->
-                        <td class="editable-cell" contenteditable="true" data-field="_height" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->height) ?>"><?= esc_html($product->height) ?></td>
+                        <td class="editable-cell shipping-col" contenteditable="true" data-field="_height" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->height) ?>"><?= esc_html($product->height) ?></td>
 
                         <!-- Unit Per Pallet -->
-                        <td class="editable-cell" contenteditable="true" data-field="unitperpallet" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->pallet) ?>"><?= esc_html($product->pallet) ?></td>
+                        <td class="editable-cell shipping-col" contenteditable="true" data-field="unitperpallet" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->pallet) ?>"><?= esc_html($product->pallet) ?></td>
 
                         <!-- Attribute -->
                         <?php foreach ($active_taxonomies as $taxonomy): 
                             $attr_value = $product_attributes[$product->ID][$taxonomy] ?? '';
                         ?>
-                        <td class="editable-cell attribute-cell" 
+                        <td class="editable-cell attribute-cell attribute-col" 
                             data-field="attribute" 
                             data-taxonomy="<?= esc_attr($taxonomy) ?>"
                             data-productid="<?= $product->ID ?>">
@@ -423,7 +483,7 @@ if(is_plugin_actived("glint-product-quantity", $savedPlugins)){
                         <?php if($glint_product_quantity_active == true):?>
 
                         <!-- Step -->
-                        <td>
+                        <td class="quantity-col">
                             <div class="editable-field glint-product-step" 
                                 contenteditable="true"
                                 data-field="_quantity_step"
@@ -432,9 +492,9 @@ if(is_plugin_actived("glint-product-quantity", $savedPlugins)){
                                 <?= esc_html(($product->glint_qty_step)) ?>         
                             </div>
                         </td>
-                        <!-- Suffix -->
 
-                        <td class="editable-cel" data-field="glint_qty_suffix" data-productid="<?= $product->ID ?>">
+                        <!-- Suffix -->
+                        <td class="editable-cel quantity-col" data-field="glint_qty_suffix" data-productid="<?= $product->ID ?>">
                             <select class="form-select glint-suffix-select" id="bulkSuffixStatus" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->glint_qty_suffix) ?>">
                                 <option value="m2" <?= strtolower($product->glint_qty_suffix) === 'm2' ? 'selected' : '' ?>>m2</option>
                                 <option value="sheet" <?= strtolower($product->glint_qty_suffix) === 'sheet' ? 'selected' : '' ?>>sheet</option>
@@ -463,28 +523,5 @@ if(is_plugin_actived("glint-product-quantity", $savedPlugins)){
         </div>
     </div>
 </div>
-
-
-<script>
-    // Store attribute terms in localStorage
-    const attributeTerms = <?= $attribute_terms_json ?>;
-    localStorage.setItem('attributeTerms', JSON.stringify(attributeTerms));
-    localStorage.setItem('attributeTermsTimestamp', Date.now());
-    
-    // Set expiration (1 hour)
-    localStorage.setItem('attributeTermsExpiration', 3600000);
-</script>
-
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
-<script type="text/javascript" src="<?php echo tool_url('/assets/js/products.js'); ?>" id="products-js"></script>
-<script type="text/javascript" src="<?php echo tool_url('/assets/js/product-saving.js'); ?>" id="product-saving-js"></script>
-
-<?php if($glint_product_quantity_active == true): ?>
-<script type="text/javascript" src="<?php echo tool_url('/assets/js/glint-quantity-saving.js'); ?>" id="glint-quantity-saving-js"></script>
-<?php endif; ?>
 
 <?php require_once __DIR__.'/includes/footer.php';
