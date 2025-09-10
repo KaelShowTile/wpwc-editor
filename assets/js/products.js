@@ -20,7 +20,6 @@ class AttributeStorage {
                 // Check if data is expired
                 const currentTime = Date.now();
                 if (currentTime - this.lastUpdated > this.expiration) {
-                    console.log('Attribute terms expired, refreshing...');
                     this.terms = {};
                     this.refreshFromServer();
                 }
@@ -34,7 +33,6 @@ class AttributeStorage {
     }
     
     refreshFromServer() {
-        console.log('Refreshing attribute terms from server...');
         var currentUrl = window.location.href;
         var baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
         

@@ -307,7 +307,7 @@ if(is_plugin_actived("glint-sample-product", $savedPlugins)){
 
                     $product_load_string .="
                         WHERE p.post_type = 'product'
-                        GROUP BY p.ID, g.meta_id";
+                        GROUP BY p.ID";
 
                     $products = $wpdb->get_results($product_load_string);
 
