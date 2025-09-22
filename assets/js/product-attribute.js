@@ -35,6 +35,7 @@ class AttributeStorage {
     refreshFromServer() {
         var currentUrl = window.location.href;
         var baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
+        console.log(baseUrl + '/includes/refresh_attribute_terms.php')
         
         $.ajax({
             url: baseUrl + '/includes/refresh_attribute_terms.php',
@@ -130,11 +131,6 @@ function saveFieldValue($field) {
             $field.text($field.data('original'));
         }
     });
-}
-
-// WooCommerce price formatting function
-function wc_price(price) {
-    return '$' + parseFloat(price).toFixed(2);
 }
 
 // Save attribute value

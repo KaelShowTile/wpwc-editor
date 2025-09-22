@@ -9,6 +9,9 @@ require_once __DIR__.'/includes/load_intergrations.php';
 // Load WordPress environment
 require_once $config['wordpress']['path'].'/wp-load.php';
 
+//for media libary
+wp_enqueue_media();
+
 // Database connection
 global $wpdb;
 
@@ -74,8 +77,10 @@ if(is_plugin_actived("glint-sample-product", $savedPlugins)){
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
-<script type="text/javascript" src="<?php echo tool_url('/assets/js/products.js'); ?>" id="products-js"></script>
+<script type="text/javascript" src="<?php echo tool_url('/assets/js/product-attribute.js'); ?>" id="products-attribute-js"></script>
 <script type="text/javascript" src="<?php echo tool_url('/assets/js/product-saving.js'); ?>" id="product-saving-js"></script>
+<script type="text/javascript" src="<?php echo tool_url('/assets/js/product-adding-new.js'); ?>" id="product-adding-new-js"></script>
+<script type="text/javascript" src="<?php echo tool_url('/assets/js/media-library.js'); ?>" id="media-library-js"></script>
 
 <?php if($glint_product_quantity_active == true): ?>
 <script type="text/javascript" src="<?php echo tool_url('/assets/js/glint-quantity-saving.js'); ?>" id="glint-quantity-saving-js"></script>
@@ -154,7 +159,7 @@ if(is_plugin_actived("glint-sample-product", $savedPlugins)){
                 <button id="bulkEditBtn" class="btn btn-primary btn-action">
                     <i class="fas fa-edit me-1"></i> Bulk Edit
                 </button>
-                <button class="btn btn-success btn-action">
+                <button class="btn btn-success btn-action" id="AddNewProduct">
                     <i class="fas fa-plus me-1"></i> Add Product
                 </button>
                 <button class="btn btn-outline-secondary btn-action" id="refreshBtn">
@@ -219,6 +224,390 @@ if(is_plugin_actived("glint-sample-product", $savedPlugins)){
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addProductForm">
+                    <ul class="nav nav-tabs" id="productTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab" aria-controls="general" aria-selected="true">General</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="gallery-tab" data-bs-toggle="tab" data-bs-target="#gallery" type="button" role="tab" aria-controls="gallery" aria-selected="false">Images</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="pricing-tab" data-bs-toggle="tab" data-bs-target="#pricing" type="button" role="tab" aria-controls="pricing" aria-selected="false">Pricing</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="inventory-tab" data-bs-toggle="tab" data-bs-target="#inventory" type="button" role="tab" aria-controls="inventory" aria-selected="false">Inventory</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" type="button" role="tab" aria-controls="shipping" aria-selected="false">Shipping</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="attributes-tab" data-bs-toggle="tab" data-bs-target="#attributes" type="button" role="tab" aria-controls="attributes" aria-selected="false">Attributes</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content p-3" id="productTabsContent">
+                        <!-- General Tab -->
+                        <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="mb-3">
+                                        <label for="productName" class="form-label required-field">Product Name</label>
+                                        <input type="text" class="form-control" id="productName" name="product_name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="shortDescription" class="form-label">Short Description</label>
+                                        <textarea class="form-control" id="shortDescription" name="short_description" rows="3"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="productDescription" class="form-label">Description</label>
+                                        <textarea class="form-control" id="productDescription" name="product_description" rows="15"></textarea>
+                                    </div>   
+                                </div>
+                                <div class="col-md-4">                                   
+                                    <div class="mb-3">
+                                        <label class="form-label">Categories</label>
+                                        <div class="search-box">
+                                            <input type="text" class="form-control" id="categorySearch" placeholder="Search categories...">
+                                        </div>
+                                        <div class="category-container" id="categoryContainer">
+                                            <!-- Categories will be loaded here via AJAX -->
+                                            <div class="text-center py-3">
+                                                <div class="spinner-border text-primary" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                                <p class="mt-2">Loading categories...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Add Tags
+                                    <div class="mb-3">
+                                        <label for="productTags" class="form-label">Tags</label>
+                                        <input type="text" class="form-control" id="productTags" name="product_tags" placeholder="Separate tags with commas">
+                                    </div>
+                                    -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="gallery" role="tabpanel" aria-labelledby="gallery-tab">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Product Cover Image</label>
+                                        <div class="product-image-preview mb-2" id="imagePreview">
+                                            <span class="text-muted">No image selected</span>
+                                        </div>
+                                        <input type="hidden" id="productImageId" name="product_image_id" value="">
+                                        <button type="button" class="btn btn-secondary" id="mediaLibraryBtn">
+                                            <i class="fas fa-images me-1"></i> Select from Media Library
+                                        </button>
+                                        <button type="button" class="btn btn-danger" id="removeImageBtn" style="display: none;">
+                                            <i class="fas fa-times me-1"></i> Remove Image
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Gallery</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Media Library Modal -->
+                        <div class="modal fade" id="mediaLibraryModal" tabindex="-1" aria-labelledby="mediaLibraryModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-xl">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="mediaLibraryModalLabel">Media Library</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <ul class="nav nav-tabs mb-3" id="mediaTabs" role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link active" id="media-library-tab" data-bs-toggle="tab" data-bs-target="#media-library" type="button" role="tab" aria-controls="media-library" aria-selected="true">
+                                                    <i class="fas fa-images me-1"></i> Media Library
+                                                </button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" type="button" role="tab" aria-controls="upload" aria-selected="false">
+                                                    <i class="fas fa-upload me-1"></i> Upload Files
+                                                </button>
+                                            </li>
+                                        </ul>
+                                        
+                                        <div class="tab-content" id="mediaTabContent">
+                                            <!-- Media Library Tab -->
+                                            <div class="tab-pane fade show active" id="media-library" role="tabpanel" aria-labelledby="media-library-tab">
+                                                
+                                                <div class="row">
+
+                                                    <div class="col-9">
+                                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                                            <h6>Media Library</h6>
+                                                            <div class="d-flex align-items-center">
+                                                                <span id="mediaCount" class="badge bg-secondary me-2">Loading...</span>
+                                                                <div class="btn-group" role="group">
+                                                                    <button type="button" class="btn btn-outline-primary btn-sm" id="refreshMedia">
+                                                                        <i class="fas fa-sync-alt"></i> Refresh
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="row" id="mediaLibraryItems">
+                                                            <div class="col-12 text-center py-5">
+                                                                <div class="spinner-border text-primary" role="status">
+                                                                    <span class="visually-hidden">Loading...</span>
+                                                                </div>
+                                                                <p class="mt-2">Loading media library...</p>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="row mt-3" id="loadMoreMediaContainer" style="display: none;">
+                                                            <div class="col-12 text-center">
+                                                                <button type="button" class="btn btn-outline-primary" id="loadMoreMedia">
+                                                                    Load More Images
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Preview Panel -->
+                                                    <div class="col-3" id="previewPanel">
+                                                        <div class="card">
+                                                            <div class="card-header">Image Preview</div>
+                                                            <div class="card-body text-center">
+                                                                <div id="mediaPreviewContainer">
+                                                                    <span class="text-muted">Select an image to preview</span>
+                                                                </div>
+                                                                <div class="mt-3" id="mediaSelectionInfo">
+                                                                    <p class="small text-muted">No image selected</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Upload Tab -->
+                                            <div class="tab-pane fade" id="upload" role="tabpanel" aria-labelledby="upload-tab">
+                                                <div class="row">
+                                                    <div class="col-9">
+                                                        <h6>Upload New File</h6>
+                                                        <p class="text-muted">Select a file to upload to your media library.</p>
+                                                        
+                                                        <div class="mb-3">
+                                                            <label for="mediaUpload" class="form-label">Choose File</label>
+                                                            <input class="form-control" type="file" id="mediaUpload" accept="image/*">
+                                                        </div>
+                                                        
+                                                        <div class="mb-3">
+                                                            <label for="imageTitle" class="form-label">Image Title</label>
+                                                            <input type="text" class="form-control" id="imageTitle" placeholder="Enter image title">
+                                                        </div>
+                                                        
+                                                        <div class="mb-3">
+                                                            <label for="imageAltText" class="form-label">Alt Text</label>
+                                                            <input type="text" class="form-control" id="imageAltText" placeholder="Enter alt text for accessibility">
+                                                        </div>
+                                                        
+                                                        <div class="mb-3">
+                                                            <label for="imageDescription" class="form-label">Description</label>
+                                                            <textarea class="form-control" id="imageDescription" rows="2" placeholder="Optional description"></textarea>
+                                                        </div>
+                                                        
+                                                        <div class="progress mb-3" id="uploadProgress" style="display: none;">
+                                                            <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                                        </div>
+                                                        
+                                                        <div class="text-center">
+                                                            <button type="button" class="btn btn-primary" id="uploadMediaBtn" disabled>
+                                                                <i class="fas fa-upload me-1"></i> Upload Image
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- Preview Panel -->
+                                                    <div id="uploadPreviewContainer" class="text-center col-3" style="display: none;">
+                                                        <h6>Image Preview</h6>
+                                                        <div id="uploadPreview" class="border rounded">
+                                                            <span class="text-muted">Preview will appear here</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="button" class="btn btn-primary" id="selectMediaBtn" disabled>Select Image</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pricing Tab -->
+                        <div class="tab-pane fade" id="pricing" role="tabpanel" aria-labelledby="pricing-tab">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="regularPrice" class="form-label">Regular Price ($)</label>
+                                        <input type="number" class="form-control" id="regularPrice" name="regular_price" step="0.01" min="0">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="salePrice" class="form-label">Sale Price ($)</label>
+                                        <input type="number" class="form-control" id="salePrice" name="sale_price" step="0.01" min="0">
+                                    </div>
+                                </div>
+                                <!-- Tax setting 
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="taxable" name="taxable" checked>
+                                            <label class="form-check-label" for="taxable">Taxable</label>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="taxClass" class="form-label">Tax Class</label>
+                                        <select class="form-select" id="taxClass" name="tax_class">
+                                            <option value="standard">Standard</option>
+                                            <option value="reduced">Reduced Rate</option>
+                                            <option value="zero">Zero Rate</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                -->
+                            </div>
+                        </div>
+                        
+                        <!-- Inventory Tab -->
+                        <div class="tab-pane fade" id="inventory" role="tabpanel" aria-labelledby="inventory-tab">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="sku" class="form-label">SKU</label>
+                                        <input type="text" class="form-control" id="sku" name="sku" placeholder="Stock Keeping Unit">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="stockStatus" class="form-label">Stock Status</label>
+                                        <select class="form-select" id="stockStatus" name="stock_status">
+                                            <option value="instock">In Stock</option>
+                                            <option value="outofstock">Out of Stock</option>
+                                            <option value="onbackorder">On Backorder</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="manageStock" class="form-label">Manage Stock</label>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="manageStock" name="manage_stock">
+                                            <label class="form-check-label" for="manageStock">Enable stock management at product level</label>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3" id="stockQuantityContainer" style="display: none;">
+                                        <label for="stockQuantity" class="form-label">Stock Quantity</label>
+                                        <input type="number" class="form-control" id="stockQuantity" name="stock_quantity" min="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Shipping Tab -->
+                        <div class="tab-pane fade" id="shipping" role="tabpanel" aria-labelledby="shipping-tab">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="weight" class="form-label">Weight (kg)</label>
+                                        <input type="number" class="form-control" id="weight" name="weight" step="0.01" min="0">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="dimensions" class="form-label">Dimensions (cm)</label>
+                                        <div class="row">
+                                            <div class="col-4">
+                                                <input type="number" class="form-control" id="length" name="length" placeholder="Length" step="0.1" min="0">
+                                            </div>
+                                            <div class="col-4">
+                                                <input type="number" class="form-control" id="width" name="width" placeholder="Width" step="0.1" min="0">
+                                            </div>
+                                            <div class="col-4">
+                                                <input type="number" class="form-control" id="height" name="height" placeholder="Height" step="0.1" min="0">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Attributes Tab -->
+                        <div class="tab-pane fade" id="attributes" role="tabpanel" aria-labelledby="attributes-tab">
+                            <div class="mb-3">
+                                <label class="form-label">Product Attributes</label>
+                                <div id="attributesContainer">
+                                    <div class="attribute-row mb-2">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <input type="text" class="form-control" name="attribute_names[]" placeholder="Attribute name (e.g. Color)">
+                                            </div>
+                                            <div class="col-5">
+                                                <input type="text" class="form-control" name="attribute_values[]" placeholder="Values (separated by | )">
+                                            </div>
+                                            <div class="col-2">
+                                                <button type="button" class="btn btn-danger remove-attribute"><i class="fas fa-trash"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-secondary mt-2" id="addAttribute">
+                                    <i class="fas fa-plus me-1"></i> Add Attribute
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="submitProduct">Add Product</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Toast -->
+<div class="toast position-fixed top-0 end-0 m-3" id="successToast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="5000">
+    <div class="toast-header bg-success text-white">
+        <strong class="me-auto">Success</strong>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+        Product added successfully!
+    </div>
+</div>
+
+<!-- Error Toast -->
+<div class="toast position-fixed top-0 end-0 m-3" id="errorToast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="5000">
+    <div class="toast-header bg-danger text-white">
+        <strong class="me-auto">Error</strong>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body" id="errorMessage">
+        There was an error adding the product.
+    </div>
+</div>
+
 
 <div class="container column-control-container">
     <div class="row">

@@ -1,5 +1,4 @@
 <?php
-// save_product_stock.php
 require_once __DIR__.'/../functions.php';
 require_once __DIR__.'/session_manager.php';
 wpe_start_session();

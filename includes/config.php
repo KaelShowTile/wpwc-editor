@@ -3,13 +3,13 @@
 return [
     'db' => [
         'host'      => 'localhost',
-        'name'      => 'cheapest_wpwc_editor',
+        'name'      => 'gettiles_wpwc_editor',
         'user'      => 'root',
         'password'  => '',
         'prefix'    => 'wpwc_'
     ],
     'wordpress' => [
-        'path'      => 'C:\xampp\htdocs\cht',
-        'url'       => 'http://127.0.0.1/cht/'
+        'path'      => 'C:\xampp\htdocs\gto',
+        'url'       => 'http://127.0.0.1/gto/'
     ]
 ];

@@ -550,4 +550,97 @@ $(document).ready(function() {
         }
     });
 
+    //delete product
+    $(document).on('click', '.delete-btn', function(e) {
+        e.preventDefault();
+        
+        // Get product ID from data attribute
+        const productId = $(this).data('id');
+        const $deleteButton = $(this);
+
+        console.log("triggerred!");
+        
+        // Confirm deletion
+        if (!confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
+            return false;
+        }
+        
+        // Show loading state
+        $deleteButton.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Deleting...');
+        
+        // Get the base URL
+        var currentUrl = window.location.href;
+        var baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
+        
+        // AJAX request to delete product
+        $.ajax({
+            url: baseUrl + '/includes/delete_product.php',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'delete_product',
+                product_id: productId,
+                security: window.productDeletionNonce || '' // Nonce for security
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Show success message
+                    showAlert('success', 'Product deleted successfully!');
+
+                    // Remove the product row from the table
+                    $deleteButton.closest('tr').fadeOut(500, function() {
+                        $(this).remove();
+                        
+                        // Update product count if needed
+                        updateProductStats();
+                    });
+                } else {
+                    // Show error message
+                    const $badge = $(`<span class="badge bg-danger position-absolute top-0 start-100 translate-middle">Error deleting product!</span>`);
+                    $('.wpwc-list-container').parent().append($badge);
+                    setTimeout(() => $badge.fadeOut(500, () => $badge.remove()), 2000);
+                    $deleteButton.prop('disabled', false).html('<i class="fas fa-trash"></i>');
+                }
+            },
+            error: function(xhr, status, error) {
+                // Show error message
+                alert('error', 'Request failed: ' + error);
+                $deleteButton.prop('disabled', false).html('<i class="fas fa-trash"></i>');
+                
+                // Debug info
+                console.error('Delete product error:', error);
+            }
+        });
+    });
+
+    // Helper function to show alerts
+    function showAlert(type, message) {
+        // Remove existing alerts
+        const existingAlerts = document.querySelectorAll('.alert-dismissible');
+        existingAlerts.forEach(alert => alert.remove());
+        
+        // Create new alert
+        const alertHtml = `
+            <div class="alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('afterbegin', alertHtml);
+        
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            const alert = document.querySelector('.alert');
+            if (alert) {
+                bootstrap.Alert.getOrCreateInstance(alert).close();
+            }
+        }, 5000);
+    }
+
 });
+
+// WooCommerce price formatting function
+function wc_price(price) {
+    return '$' + parseFloat(price).toFixed(2);
+}
