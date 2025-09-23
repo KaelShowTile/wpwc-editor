@@ -21,11 +21,6 @@ try {
     define('WP_USE_THEMES', false);
     require_once $wp_path . '/wp-load.php';
 
-    // Check if WordPress loaded successfully
-    if (!function_exists('get_posts')) {
-        throw new Exception('WordPress functions not available');
-    }
-
     // Get pagination parameters
     $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
     $per_page = isset($_GET['per_page']) ? min(100, max(1, intval($_GET['per_page']))) : 24;

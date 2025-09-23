@@ -3,8 +3,6 @@ require_once __DIR__.'/../functions.php';
 require_once __DIR__.'/session_manager.php';
 
 wpe_start_session();
-
-// Start output buffering to capture any unwanted output from wpe_log()
 ob_start();
 
 // Initialize response array
@@ -112,10 +110,16 @@ if (!empty($dimensions)) {
     $product->set_height($dimensions['height'] ?? 0);
 }
 
+//set thumbnail
 if (!empty($_POST['product_image_id'])) {
     $attachment_id = intval($_POST['product_image_id']);
-    // Set as product image
     update_post_meta($product_id, '_thumbnail_id', $attachment_id);
+}
+
+//set gallery
+if (!empty($_POST['product_gallery_ids'])) {
+    $gallery_ids = array_map('intval', explode(',', $_POST['product_gallery_ids']));
+    update_post_meta($product_id, '_product_image_gallery', implode(',', $gallery_ids));
 }
 
 /*

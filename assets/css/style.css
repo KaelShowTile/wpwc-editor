@@ -69,6 +69,8 @@ header nav .menu-list .menu-item a:hover{color:#000;}
 #thumb-col{max-width: 80px !important;}
 #status-col{max-width: 50px !important;}
 #title-col{min-width: 200px;}
+.editable-field.yoast-seo-title{min-width: 200px;}
+.editable-field.yoast-des-title{min-width: 400px;}
 
 .column-control-container{margin-bottom: 10px;}
 .column-control-container p{margin-bottom: 5px;}

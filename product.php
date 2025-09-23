@@ -56,6 +56,11 @@ if(is_plugin_actived("glint-sample-product", $savedPlugins)){
     $glint_sample_product_active = true;
 }
 
+$yoast_seo_active = false;
+if(is_plugin_actived("yoast-seo", $savedPlugins)){
+    $yoast_seo_active = true;
+}
+
 ?>
 <!-- CSS for product table -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -81,9 +86,14 @@ if(is_plugin_actived("glint-sample-product", $savedPlugins)){
 <script type="text/javascript" src="<?php echo tool_url('/assets/js/product-saving.js'); ?>" id="product-saving-js"></script>
 <script type="text/javascript" src="<?php echo tool_url('/assets/js/product-adding-new.js'); ?>" id="product-adding-new-js"></script>
 <script type="text/javascript" src="<?php echo tool_url('/assets/js/media-library.js'); ?>" id="media-library-js"></script>
+<script type="text/javascript" src="<?php echo tool_url('/assets/js/media-library-gallery.js'); ?>" id="media-library-gallery-js"></script>
 
 <?php if($glint_product_quantity_active == true): ?>
 <script type="text/javascript" src="<?php echo tool_url('/assets/js/glint-quantity-saving.js'); ?>" id="glint-quantity-saving-js"></script>
+<?php endif; ?>
+
+<?php if($yoast_seo_active == true): ?>
+<script type="text/javascript" src="<?php echo tool_url('/assets/js/yoast-seo-saving.js'); ?>" id="yoast-seo-saving-js"></script>
 <?php endif; ?>
 
 <div class="container">
@@ -225,6 +235,7 @@ if(is_plugin_actived("glint-sample-product", $savedPlugins)){
     </div>
 </div>
 
+<!-- Add Product Panel -->
 <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -317,6 +328,13 @@ if(is_plugin_actived("glint-sample-product", $savedPlugins)){
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Gallery</label>
+                                    <div class="gallery-preview mb-2" id="galleryPreview">
+                                        <span class="text-muted">No gallery images selected</span>
+                                    </div>
+                                    <input type="hidden" id="productGalleryIds" name="product_gallery_ids" value="">
+                                    <button type="button" class="btn btn-secondary" id="galleryLibraryBtn">
+                                        <i class="fas fa-images me-1"></i> Select Gallery Images
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -608,7 +626,6 @@ if(is_plugin_actived("glint-sample-product", $savedPlugins)){
     </div>
 </div>
 
-
 <div class="container column-control-container">
     <div class="row">
         <p>Show/hide columns</p>
@@ -624,6 +641,9 @@ if(is_plugin_actived("glint-sample-product", $savedPlugins)){
             <?php if($glint_sample_product_active == true): ?>
             <li><input class="column-check-input" type="checkbox" value="show" id="hide-sample-product" checked=""><span>Sample Product</span></li>
             <?php endif; ?>
+            <?php if($yoast_seo_active == true):?>
+            <li><input class="column-check-input" type="checkbox" value="show" id="hide-yoast-seo" checked=""><span>Yoast SEO</span></li>
+            <?php endif; ?> 
         </ul>
     </div>
 </div>
@@ -658,6 +678,10 @@ if(is_plugin_actived("glint-sample-product", $savedPlugins)){
                         <th width="100" class="quantity-col">Step</th>
                         <th width="100" class="quantity-col">Suffix</th>
                         <?php endif; ?>
+                        <?php if($yoast_seo_active == true):?>
+                        <th width="160" class="yoast-col">Yoast SEO Title</th>
+                        <th width="200" class="yoast-col">Yoast SEO Description</th>
+                        <?php endif; ?>
                         <th width="100">Actions</th>
                     </tr>
                 </thead>
@@ -679,6 +703,12 @@ if(is_plugin_actived("glint-sample-product", $savedPlugins)){
                             MAX(CASE WHEN pm1.meta_key = 'unitperpallet' THEN pm1.meta_value END) AS pallet,
                             MAX(CASE WHEN pm1.meta_key = '_thumbnail_id' THEN pm1.meta_value END) AS thumbnail_id";
                     
+                    if($yoast_seo_active == true){
+                        $product_load_string .=",
+                            MAX(CASE WHEN pm1.meta_key = '_yoast_wpseo_title' THEN pm1.meta_value END) AS yoast_seo_title,
+                            MAX(CASE WHEN pm1.meta_key = '_yoast_wpseo_metadesc' THEN pm1.meta_value END) AS yoast_seo_desc";
+                    }
+
                     if($glint_product_quantity_active == true){
                         $product_load_string .=",
                             g.glint_qty_suffix,
@@ -696,6 +726,7 @@ if(is_plugin_actived("glint-sample-product", $savedPlugins)){
 
                     $product_load_string .="
                         WHERE p.post_type = 'product'
+                        AND p.post_status IN ('publish', 'private')
                         GROUP BY p.ID";
 
                     $products = $wpdb->get_results($product_load_string);
@@ -894,6 +925,32 @@ if(is_plugin_actived("glint-sample-product", $savedPlugins)){
                                 <option value="" <?= strtolower($product->glint_qty_suffix) === '' ? 'selected' : '' ?>>none</option>
                             </select> 
                         </td>
+                        <?php endif; ?>
+
+                        <?php if($yoast_seo_active == true):?>
+
+                        <!-- Yoast SEO Title -->
+                        <td class="seo-title-col">
+                            <div class="editable-field yoast-seo-title" 
+                                contenteditable="true"
+                                data-field="_yoast_wpseo_title"
+                                data-productid="<?= $product->ID ?>"
+                                data-original="<?= esc_attr($product->yoast_seo_title) ?>">
+                                <?= esc_html(($product->yoast_seo_title)) ?>         
+                            </div>
+                        </td>
+
+                        <!-- Yoast SEO Description -->
+                        <td class="yoast-col">
+                            <div class="editable-field yoast-des-title" 
+                                contenteditable="true"
+                                data-field="_yoast_wpseo_metadesc"
+                                data-productid="<?= $product->ID ?>"
+                                data-original="<?= esc_attr($product->yoast_seo_desc) ?>">
+                                <?= esc_html(($product->yoast_seo_desc)) ?>         
+                            </div>
+                        </td>
+                            
                         <?php endif; ?>
 
                         <!-- Buttons -->

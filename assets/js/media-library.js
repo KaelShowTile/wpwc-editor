@@ -4,6 +4,9 @@ $(document).ready(function() {
     let currentPage = 1;
     let isLoading = false;
     let hasMoreMedia = true;
+    let galleryMediaIds = [];
+    let galleryMediaUrls = {};
+    let currentModalMode = 'thumbnail'; // 'thumbnail' or 'gallery'
     
     // Open media library modal
     $('#mediaLibraryBtn').click(function() {
@@ -93,38 +96,48 @@ $(document).ready(function() {
                 return xhr;
             },
             success: function(response) {
-                try {
-                    const data = JSON.parse(response);
-                    if (data.success) {
-                        // Show success message
-                        showToast('success', 'Image uploaded successfully!');
-                        
-                        // Switch back to media library tab
-                        $('#mediaTabs button[data-bs-target="#media-library"]').tab('show');
-                        
-                        // Refresh media library to show the new image
-                        resetMediaLibrary();
-                        loadMediaLibrary();
-                        
-                        // Select the newly uploaded image
-                        selectMediaItem(data.attachment_id, data.url);
-                        
-                        // Reset upload form
-                        $('#mediaUpload').val('');
-                        $('#imageTitle').val('');
-                        $('#imageAltText').val('');
-                        $('#imageDescription').val('');
-                        $('#uploadPreviewContainer').hide();
-                    } else {
-                        showToast('error', 'Upload failed: ' + data.message);
+                let data;
+                if (typeof response === 'string') {
+                    try {
+                        data = JSON.parse(response);
+                    } catch (e) {
+                        console.error('Failed to parse JSON:', response);
+                        showToast('error', 'Invalid server response format');
+                        return;
                     }
-                } catch (e) {
-                    console.log(response);
-                    showToast('error', 'Error parsing response: ' + e);
+                } else {
+                    data = response;
+                }
+                
+                if (data.success) {
+                    // Show success message
+                    showToast('success', 'Image uploaded successfully!');
+                    
+                    // Switch back to media library tab
+                    $('#mediaTabs button[data-bs-target="#media-library"]').tab('show');
+                    
+                    // Refresh media library to show the new image
+                    resetMediaLibrary();
+                    loadMediaLibrary();
+                    
+                    // Select the newly uploaded image
+                    selectMediaItem(data.attachment_id, data.url);
+                    
+                    // Reset upload form
+                    $('#mediaUpload').val('');
+                    $('#imageTitle').val('');
+                    $('#imageAltText').val('');
+                    $('#imageDescription').val('');
+                    $('#uploadPreviewContainer').hide();
+                } else {
+                    showToast('error', 'Upload failed: ' + data.message);
                 }
             },
             error: function(xhr, status, error) {
                 showToast('error', 'Upload error: ' + error);
+                $('#uploadProgress').hide();
+                $('#uploadProgress .progress-bar').css('width', '0%').attr('aria-valuenow', 0).text('0%');
+                $('#uploadMediaBtn').prop('disabled', false).html('<i class="fas fa-upload me-1"></i> Upload Image');
             },
             complete: function() {
                 $('#uploadProgress').hide();
@@ -309,4 +322,156 @@ $(document).ready(function() {
             toast.alert('close');
         }, 5000);
     }
+
+    // Open media library modal for gallery selection
+    $('#galleryLibraryBtn').click(function() {
+        currentModalMode = 'gallery';
+        
+        // Load current gallery values
+        const currentGallery = $('#productGalleryIds').val();
+        if (currentGallery) {
+            galleryMediaIds = currentGallery.split(',').map(id => parseInt(id.trim()));
+            // We'll need to fetch URLs for these IDs
+            updateSelectedGalleryInfo();
+        }
+        
+        // Update modal title and button text
+        $('#mediaLibraryModalLabel').text('Select Gallery Images');
+        $('#selectGalleryBtn').text('Add to Gallery').show();
+        $('#selectMediaBtn').hide();
+        
+        $('#mediaLibraryModal').modal('show');
+        resetMediaLibrary();
+        loadMediaLibrary();
+    });
+    
+    // Toggle gallery image selection
+    $(document).on('click', '.media-item', function() {
+        if (currentModalMode !== 'gallery') return;
+        
+        const mediaId = $(this).data('id');
+        const mediaUrl = $(this).data('url');
+        
+        if (galleryMediaIds.includes(mediaId)) {
+            // Remove from selection
+            galleryMediaIds = galleryMediaIds.filter(id => id !== mediaId);
+            delete galleryMediaUrls[mediaId];
+            $(this).removeClass('selected');
+        } else {
+            // Add to selection
+            galleryMediaIds.push(mediaId);
+            galleryMediaUrls[mediaId] = mediaUrl;
+            $(this).addClass('selected');
+        }
+        
+        updateSelectedGalleryInfo();
+    });
+    
+    // Save gallery selection
+    $('#selectGalleryBtn').click(function() {
+        // Update hidden field
+        $('#productGalleryIds').val(galleryMediaIds.join(','));
+        
+        // Update preview
+        updateGalleryPreview();
+        
+        // Close modal
+        $('#mediaLibraryModal').modal('hide');
+        
+        showToast('success', 'Gallery updated successfully!');
+    });
+    
+    // Update selected gallery info in modal
+    function updateSelectedGalleryInfo() {
+        $('#selectedImagesCount').text(galleryMediaIds.length + ' images selected');
+        
+        let previewsHtml = '';
+        if (galleryMediaIds.length === 0) {
+            previewsHtml = '<span class="text-muted">No images selected yet</span>';
+        } else {
+            galleryMediaIds.forEach(id => {
+                if (galleryMediaUrls[id]) {
+                    previewsHtml += `
+                        <div class="selected-image-thumb">
+                            <img src="${galleryMediaUrls[id]}" class="img-thumbnail" alt="Selected image">
+                            <button type="button" class="btn-remove-image" data-id="${id}">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+            });
+        }
+        
+        $('#selectedImagesContainer').html(previewsHtml);
+    }
+    
+    // Remove image from gallery selection
+    $(document).on('click', '.btn-remove-image', function(e) {
+        e.stopPropagation();
+        const mediaId = $(this).data('id');
+        
+        // Remove from selection
+        galleryMediaIds = galleryMediaIds.filter(id => id !== mediaId);
+        delete galleryMediaUrls[mediaId];
+        
+        // Update UI
+        $(`.media-item[data-id="${mediaId}"]`).removeClass('selected');
+        updateSelectedGalleryInfo();
+    });
+    
+    // Update gallery preview in main form
+    function updateGalleryPreview() {
+        const preview = $('#galleryPreview');
+        
+        if (galleryMediaIds.length === 0) {
+            preview.html('<span class="text-muted">No gallery images selected</span>');
+            return;
+        }
+        
+        let previewHtml = '<div class="d-flex flex-wrap gap-2">';
+        galleryMediaIds.forEach(id => {
+            if (galleryMediaUrls[id]) {
+                previewHtml += `<img src="${galleryMediaUrls[id]}" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;" alt="Gallery image">`;
+            }
+        });
+        previewHtml += '</div>';
+        
+        preview.html(previewHtml);
+    }
+    
+    // Initialize gallery if there are existing values
+    function initGallery() {
+        const currentGallery = $('#productGalleryIds').val();
+        if (currentGallery) {
+            galleryMediaIds = currentGallery.split(',').map(id => parseInt(id.trim()));
+            
+            // We need to fetch URLs for these IDs
+            if (galleryMediaIds.length > 0) {
+                const currentUrl = window.location.href;
+                const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
+                
+                $.ajax({
+                    url: baseUrl + '/includes/get_media_by_ids.php',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        action: 'get_media_by_ids',
+                        media_ids: galleryMediaIds
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            response.media.forEach(item => {
+                                galleryMediaUrls[item.id] = item.url;
+                            });
+                            updateGalleryPreview();
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    // Initialize gallery on page load
+    initGallery();
 });

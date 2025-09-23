@@ -91,8 +91,11 @@ $(document).ready(function() {
             $cell.addClass('text-warning');
 
             if($cell.hasClass('glint-product-step')){
-                console.log('step field triggerred');
                 updateQuantityStep($cell)
+            }else if($cell.hasClass('yoast-seo-title')){
+                updateYoastTitle($cell)
+            }else if($cell.hasClass('yoast-des-title')){
+                updateYoastDesc($cell)
             }else{
                 saveFieldValue($cell);
             }  
@@ -432,8 +435,9 @@ $(document).ready(function() {
             }
         });
     });
-     var updateColumn = debounce(function(){
-        console.log('update cols');
+
+    //show/hide column
+    var updateColumn = debounce(function(){
 
         var isPriceChecked = $('#hide-price-col').is(':checked');
         var isStockChecked = $('#hide-stock-col').is(':checked');
@@ -442,6 +446,7 @@ $(document).ready(function() {
         var isAttrChecked = $('#hide-attribute-col').is(':checked');
         var isQtyChecked = $('#hide-quantity-col').is(':checked');
         var isSampleChecked = $('#hide-sample-product').is(':checked');
+        var isYoastChecked = $('#hide-yoast-seo').is(':checked');
 
         if(isPriceChecked == false){
             $('.price-col').hide();
@@ -469,6 +474,10 @@ $(document).ready(function() {
 
         if(isSampleChecked== false){
             $('.sample-product-row').hide();
+        }
+
+        if(isYoastChecked== false){
+            $('.yoast-col').hide();
         }
     }, 0);
 
@@ -547,6 +556,15 @@ $(document).ready(function() {
             $('.sample-product-row').hide();
         }else{
             $('.sample-product-row').show();
+        }
+    });
+
+    $('#hide-yoast-seo').change(function(){
+        var isChecked = $(this).is(':checked');
+        if(isChecked == false){
+            $('.yoast-col').hide();
+        }else{
+            $('.yoast-col').show();
         }
     });
 

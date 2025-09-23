@@ -1,7 +1,9 @@
 <?php
 require_once __DIR__.'/../functions.php';
 require_once __DIR__.'/session_manager.php';
+
 wpe_start_session();
+ob_start();
 
 // Load configuration
 $config = require __DIR__.'/config.php';
@@ -22,17 +24,12 @@ try {
 
     // Load WordPress environment
     $wp_path = $config['wordpress']['path'];
-    if (!file_exists($wp_path . '/wp-load.php')) {
-        throw new Exception('WordPress path is incorrect');
-    }
-
-    // Load WordPress
-    define('WP_USE_THEMES', false);
     require_once $wp_path . '/wp-load.php';
 
     // Check if WordPress loaded successfully
     if (!function_exists('wp_handle_upload')) {
         throw new Exception('WordPress functions not available');
+        ob_clean();
     }
 
     // Handle file upload
@@ -44,6 +41,7 @@ try {
     
     if (isset($movefile['error'])) {
         throw new Exception($movefile['error']);
+        ob_clean();
     }
     
     // Get additional image data
@@ -90,7 +88,9 @@ try {
     $response['message'] = $e->getMessage();
 }
 
+ob_clean();
+
 // Return JSON response
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 echo json_encode($response);
 exit;
