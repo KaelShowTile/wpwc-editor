@@ -23,11 +23,22 @@ try {
     if (!$product) {
         throw new Exception('Product not found');
     }
-
+    //handle product title
     if ($field === 'post_title') {
         $result = wp_update_post([
             'ID' => $product_id,
             'post_title' => sanitize_text_field($value)
+        ]);
+        
+        if (is_wp_error($result)) {
+            throw new Exception($result->get_error_message());
+        }
+    }
+    //handle short desc
+    elseif($field === 'post_excerpt'){
+        $result = wp_update_post([
+            'ID' => $product_id,
+            'post_excerpt' => sanitize_text_field($value)
         ]);
         
         if (is_wp_error($result)) {

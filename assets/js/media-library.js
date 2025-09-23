@@ -8,8 +8,39 @@ $(document).ready(function() {
     let galleryMediaUrls = {};
     let currentModalMode = 'thumbnail'; // 'thumbnail' or 'gallery'
     
-    // Open media library modal
+    // Open media library in single select mode
     $('#mediaLibraryBtn').click(function() {
+        currentModalMode = 'thumbnail';
+        
+        // Update modal title and button text
+        $('#mediaLibraryModalLabel').text('Select Image');
+        $('#selectGalleryBtn').hide();
+        $('#selectMediaBtn').show();
+        initThumb();
+        $('#mediaLibraryModal').modal('show');
+        resetMediaLibrary();
+        loadMediaLibrary();
+    });
+
+    // Open media library in gallery/mulit select mode
+    $('#galleryLibraryBtn').click(function() {
+        currentModalMode = 'gallery';
+
+        // Load current gallery values
+        const currentGallery = $('#productGalleryIds').val();
+        console.log("open gallery:");
+        console.log(currentGallery);
+        if (currentGallery) {
+            galleryMediaIds = currentGallery.split(',').map(id => parseInt(id.trim()));
+        }else{
+            galleryMediaIds = [];
+        }
+        
+        // Update modal title and button text
+        $('#mediaLibraryModalLabel').text('Select Gallery Images');
+        $('#selectGalleryBtn').show();
+        $('#selectMediaBtn').hide();
+        initGallery();
         $('#mediaLibraryModal').modal('show');
         resetMediaLibrary();
         loadMediaLibrary();
@@ -147,13 +178,6 @@ $(document).ready(function() {
         });
     });
     
-    // Select media item from library
-    $(document).on('click', '.media-item', function() {
-        const mediaId = $(this).data('id');
-        const mediaUrl = $(this).data('url');
-        selectMediaItem(mediaId, mediaUrl);
-    });
-    
     // Confirm media selection
     $('#selectMediaBtn').click(function() {
         if (selectedMediaId) {
@@ -251,17 +275,30 @@ $(document).ready(function() {
         }
         
         media.forEach(function(item) {
-            html += `
-                <div class="col-md-auto">
-                    <div class="media-item card h-100" data-id="${item.id}" data-url="${item.url}" style="cursor: pointer;">
-                        <img src="${item.thumbnail}" class="card-img-top" alt="${item.title}" style="height: 100px; object-fit: cover;">
-                        <div class="card-body p-2">
-                            <h6 class="card-title mb-0 text-truncate">${item.title}</h6>
-                            <p class="card-text small text-muted mb-0">${item.date_formatted}</p>
+            
+            let hideItem = false;
+
+            if(currentModalMode == 'gallery'){
+                let currentGallery = $('#productGalleryIds').val();
+                let checkArray = currentGallery.split(',').map(Number);
+                hideItem = checkArray.includes(item.id);
+            }
+
+            if(hideItem == false){
+                console.log(hideItem);
+                html += `
+                    <div class="col-md-auto">
+                        <div class="media-item card h-100" data-id="${item.id}" data-url="${item.url}" style="cursor: pointer;">
+                            <img src="${item.thumbnail}" class="card-img-top" alt="${item.title}" style="height: 100px; object-fit: cover;">
+                            <div class="card-body p-2">
+                                <h6 class="card-title mb-0 text-truncate">${item.title}</h6>
+                                <p class="card-text small text-muted mb-0">${item.date_formatted}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
+
         });
         
         if (clearExisting) {
@@ -281,7 +318,99 @@ $(document).ready(function() {
         $(`.media-item[data-id="${id}"]`).addClass('selected');
         $('#mediaPreviewContainer').html(`<img src="${url}" class="img-fluid" alt="Preview">`);
         $('#mediaSelectionInfo').html(`<p class="small">Selected: <strong>Image #${id}</strong></p>`);
-        $('#selectMediaBtn').prop('disabled', false);
+        $('#selectMediaBtn').prop("disabled", false);
+    }
+
+    function removeSelectedImage(id){
+
+    }
+
+    // Toggle gallery image selection
+    $(document).on('click', '.media-item', function() {
+        const mediaId = $(this).data('id');
+        const mediaUrl = $(this).data('url');
+
+        if (currentModalMode !== 'gallery'){
+            selectMediaItem(mediaId, mediaUrl);
+        }else{
+            if (galleryMediaIds.includes(mediaId)) {
+                // Remove from selection
+                galleryMediaIds = galleryMediaIds.filter(id => id !== mediaId);
+                delete galleryMediaUrls[mediaId];
+                $(this).removeClass('selected');
+                console.log(galleryMediaIds);
+            } else {
+                // Add to selection
+                galleryMediaIds.push(mediaId);
+                galleryMediaUrls[mediaId] = mediaUrl;
+                $(this).addClass('selected');
+                console.log(galleryMediaIds);
+            }
+
+            $('#selectGalleryBtn').prop("disabled", false);
+        }
+    });
+    
+    // Save gallery selection
+    $('#selectGalleryBtn').click(function() {
+        // Update hidden field
+        $('#productGalleryIds').val(galleryMediaIds.join(','));
+        
+        // Update preview
+        updateGalleryPreview();
+        
+        // Close modal
+        $('#mediaLibraryModal').modal('hide');
+    });
+    
+    // Remove image from gallery selection
+    $(document).on('click', '.btn-remove-image', function(e) {
+        e.stopPropagation();
+        const mediaId = $(this).data('id');
+        const galleryIds = $('#productGalleryIds').val();
+
+        // Remove from selection
+        const newGalleryIds = galleryIds.split(',').filter(id => id != mediaId).join(',');
+        $('#productGalleryIds').attr('value', newGalleryIds);
+        
+        //remove image
+        $(`#product-gallery-image-preview-${mediaId}`).remove();
+    });
+    
+    // Update gallery preview in main form
+    function updateGalleryPreview() {
+        const preview = $('#galleryPreview');
+        
+        if (galleryMediaIds.length === 0) {
+            preview.html('<span class="text-muted">No gallery images selected</span>');
+            return;
+        }
+        
+        let previewHtml = '<div class="d-flex flex-wrap gap-2">';
+        galleryMediaIds.forEach(id => {
+            if (galleryMediaUrls[id]) {
+                previewHtml += `
+                    <div class="selected-image-thumb" id="product-gallery-image-preview-${id}">
+                        <img src="${galleryMediaUrls[id]}" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;" alt="Gallery image">
+                        <button type="button" class="btn-remove-image" data-id="${id}">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>    
+                `;
+            }
+        });
+        previewHtml += '</div>';
+        
+        preview.html(previewHtml);
+    }
+    
+    
+    function initGallery() {
+        
+    }
+
+    function initThumb(){
+
     }
 
     // toast messages, move it to a seperate file later
@@ -323,155 +452,4 @@ $(document).ready(function() {
         }, 5000);
     }
 
-    // Open media library modal for gallery selection
-    $('#galleryLibraryBtn').click(function() {
-        currentModalMode = 'gallery';
-        
-        // Load current gallery values
-        const currentGallery = $('#productGalleryIds').val();
-        if (currentGallery) {
-            galleryMediaIds = currentGallery.split(',').map(id => parseInt(id.trim()));
-            // We'll need to fetch URLs for these IDs
-            updateSelectedGalleryInfo();
-        }
-        
-        // Update modal title and button text
-        $('#mediaLibraryModalLabel').text('Select Gallery Images');
-        $('#selectGalleryBtn').text('Add to Gallery').show();
-        $('#selectMediaBtn').hide();
-        
-        $('#mediaLibraryModal').modal('show');
-        resetMediaLibrary();
-        loadMediaLibrary();
-    });
-    
-    // Toggle gallery image selection
-    $(document).on('click', '.media-item', function() {
-        if (currentModalMode !== 'gallery') return;
-        
-        const mediaId = $(this).data('id');
-        const mediaUrl = $(this).data('url');
-        
-        if (galleryMediaIds.includes(mediaId)) {
-            // Remove from selection
-            galleryMediaIds = galleryMediaIds.filter(id => id !== mediaId);
-            delete galleryMediaUrls[mediaId];
-            $(this).removeClass('selected');
-        } else {
-            // Add to selection
-            galleryMediaIds.push(mediaId);
-            galleryMediaUrls[mediaId] = mediaUrl;
-            $(this).addClass('selected');
-        }
-        
-        updateSelectedGalleryInfo();
-    });
-    
-    // Save gallery selection
-    $('#selectGalleryBtn').click(function() {
-        // Update hidden field
-        $('#productGalleryIds').val(galleryMediaIds.join(','));
-        
-        // Update preview
-        updateGalleryPreview();
-        
-        // Close modal
-        $('#mediaLibraryModal').modal('hide');
-        
-        showToast('success', 'Gallery updated successfully!');
-    });
-    
-    // Update selected gallery info in modal
-    function updateSelectedGalleryInfo() {
-        $('#selectedImagesCount').text(galleryMediaIds.length + ' images selected');
-        
-        let previewsHtml = '';
-        if (galleryMediaIds.length === 0) {
-            previewsHtml = '<span class="text-muted">No images selected yet</span>';
-        } else {
-            galleryMediaIds.forEach(id => {
-                if (galleryMediaUrls[id]) {
-                    previewsHtml += `
-                        <div class="selected-image-thumb">
-                            <img src="${galleryMediaUrls[id]}" class="img-thumbnail" alt="Selected image">
-                            <button type="button" class="btn-remove-image" data-id="${id}">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    `;
-                }
-            });
-        }
-        
-        $('#selectedImagesContainer').html(previewsHtml);
-    }
-    
-    // Remove image from gallery selection
-    $(document).on('click', '.btn-remove-image', function(e) {
-        e.stopPropagation();
-        const mediaId = $(this).data('id');
-        
-        // Remove from selection
-        galleryMediaIds = galleryMediaIds.filter(id => id !== mediaId);
-        delete galleryMediaUrls[mediaId];
-        
-        // Update UI
-        $(`.media-item[data-id="${mediaId}"]`).removeClass('selected');
-        updateSelectedGalleryInfo();
-    });
-    
-    // Update gallery preview in main form
-    function updateGalleryPreview() {
-        const preview = $('#galleryPreview');
-        
-        if (galleryMediaIds.length === 0) {
-            preview.html('<span class="text-muted">No gallery images selected</span>');
-            return;
-        }
-        
-        let previewHtml = '<div class="d-flex flex-wrap gap-2">';
-        galleryMediaIds.forEach(id => {
-            if (galleryMediaUrls[id]) {
-                previewHtml += `<img src="${galleryMediaUrls[id]}" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;" alt="Gallery image">`;
-            }
-        });
-        previewHtml += '</div>';
-        
-        preview.html(previewHtml);
-    }
-    
-    // Initialize gallery if there are existing values
-    function initGallery() {
-        const currentGallery = $('#productGalleryIds').val();
-        if (currentGallery) {
-            galleryMediaIds = currentGallery.split(',').map(id => parseInt(id.trim()));
-            
-            // We need to fetch URLs for these IDs
-            if (galleryMediaIds.length > 0) {
-                const currentUrl = window.location.href;
-                const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
-                
-                $.ajax({
-                    url: baseUrl + '/includes/get_media_by_ids.php',
-                    type: 'POST',
-                    dataType: 'json',
-                    data: {
-                        action: 'get_media_by_ids',
-                        media_ids: galleryMediaIds
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            response.media.forEach(item => {
-                                galleryMediaUrls[item.id] = item.url;
-                            });
-                            updateGalleryPreview();
-                        }
-                    }
-                });
-            }
-        }
-    }
-
-    // Initialize gallery on page load
-    initGallery();
 });

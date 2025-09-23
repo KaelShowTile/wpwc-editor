@@ -116,12 +116,21 @@ if (!empty($_POST['product_image_id'])) {
     update_post_meta($product_id, '_thumbnail_id', $attachment_id);
 }
 
+wpe_log("Start processing gallery...");
+
 //set gallery
 if (!empty($_POST['product_gallery_ids'])) {
+    wpe_log("Has gallery ids:" . $_POST['product_gallery_ids']);
     $gallery_ids = array_map('intval', explode(',', $_POST['product_gallery_ids']));
-    update_post_meta($product_id, '_product_image_gallery', implode(',', $gallery_ids));
+    // Remove empty values
+    $gallery_ids = array_filter($gallery_ids);
+    if (!empty($gallery_ids)) {
+        $product->set_gallery_image_ids($gallery_ids);
+        wpe_log("set product gallery");
+    }
 }
 
+wpe_log("end processing gallery...");
 /*
 if (!empty($_POST['shipping_class'])) {
     $shipping_class = get_term_by('slug', sanitize_text_field($_POST['shipping_class']), 'product_shipping_class');

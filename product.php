@@ -235,6 +235,142 @@ if(is_plugin_actived("yoast-seo", $savedPlugins)){
     </div>
 </div>
 
+<!-- Media Library Modal -->
+<div class="modal fade" id="mediaLibraryModal" tabindex="-1" aria-labelledby="mediaLibraryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mediaLibraryModalLabel">Media Library</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul class="nav nav-tabs mb-3" id="mediaTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="media-library-tab" data-bs-toggle="tab" data-bs-target="#media-library" type="button" role="tab" aria-controls="media-library" aria-selected="true">
+                            <i class="fas fa-images me-1"></i> Media Library
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" type="button" role="tab" aria-controls="upload" aria-selected="false">
+                            <i class="fas fa-upload me-1"></i> Upload Files
+                        </button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content" id="mediaTabContent">
+                    <!-- Media Library Tab -->
+                    <div class="tab-pane fade show active" id="media-library" role="tabpanel" aria-labelledby="media-library-tab">
+                        
+                        <div class="row">
+
+                            <div class="col-9">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6>Media Library</h6>
+                                    <div class="d-flex align-items-center">
+                                        <span id="mediaCount" class="badge bg-secondary me-2">Loading...</span>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-outline-primary btn-sm" id="refreshMedia">
+                                                <i class="fas fa-sync-alt"></i> Refresh
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row" id="mediaLibraryItems">
+                                    <div class="col-12 text-center py-5">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2">Loading media library...</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mt-3" id="loadMoreMediaContainer" style="display: none;">
+                                    <div class="col-12 text-center">
+                                        <button type="button" class="btn btn-outline-primary" id="loadMoreMedia">
+                                            Load More Images
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Preview Panel -->
+                            <div class="col-3" id="previewPanel">
+                                <div class="card">
+                                    <div class="card-header">Image Preview</div>
+                                    <div class="card-body text-center">
+                                        <div id="mediaPreviewContainer">
+                                            <span class="text-muted">Select an image to preview</span>
+                                        </div>
+                                        <div class="mt-3" id="mediaSelectionInfo">
+                                            <p class="small text-muted">No image selected</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    
+                    <!-- Upload Tab -->
+                    <div class="tab-pane fade" id="upload" role="tabpanel" aria-labelledby="upload-tab">
+                        <div class="row">
+                            <div class="col-9">
+                                <h6>Upload New File</h6>
+                                <p class="text-muted">Select a file to upload to your media library.</p>
+                                
+                                <div class="mb-3">
+                                    <label for="mediaUpload" class="form-label">Choose File</label>
+                                    <input class="form-control" type="file" id="mediaUpload" accept="image/*">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="imageTitle" class="form-label">Image Title</label>
+                                    <input type="text" class="form-control" id="imageTitle" placeholder="Enter image title">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="imageAltText" class="form-label">Alt Text</label>
+                                    <input type="text" class="form-control" id="imageAltText" placeholder="Enter alt text for accessibility">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="imageDescription" class="form-label">Description</label>
+                                    <textarea class="form-control" id="imageDescription" rows="2" placeholder="Optional description"></textarea>
+                                </div>
+                                
+                                <div class="progress mb-3" id="uploadProgress" style="display: none;">
+                                    <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <button type="button" class="btn btn-primary" id="uploadMediaBtn" disabled>
+                                        <i class="fas fa-upload me-1"></i> Upload Image
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Preview Panel -->
+                            <div id="uploadPreviewContainer" class="text-center col-3" style="display: none;">
+                                <h6>Image Preview</h6>
+                                <div id="uploadPreview" class="border rounded">
+                                    <span class="text-muted">Preview will appear here</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="selectGalleryBtn" disabled>Add to Gallery</button>
+                <button type="button" class="btn btn-primary" id="selectMediaBtn" disabled>Select Image</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Add Product Panel -->
 <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
@@ -309,6 +445,7 @@ if(is_plugin_actived("yoast-seo", $savedPlugins)){
                             </div>
                         </div>
 
+                        <!-- Product image & gallery Tab -->
                         <div class="tab-pane fade" id="gallery" role="tabpanel" aria-labelledby="gallery-tab">
                             <div class="row">
                                 <div class="col-md-6">
@@ -339,143 +476,6 @@ if(is_plugin_actived("yoast-seo", $savedPlugins)){
                             </div>
                         </div>
 
-                        <!-- Media Library Modal -->
-                        <div class="modal fade" id="mediaLibraryModal" tabindex="-1" aria-labelledby="mediaLibraryModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-xl">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="mediaLibraryModalLabel">Media Library</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <ul class="nav nav-tabs mb-3" id="mediaTabs" role="tablist">
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link active" id="media-library-tab" data-bs-toggle="tab" data-bs-target="#media-library" type="button" role="tab" aria-controls="media-library" aria-selected="true">
-                                                    <i class="fas fa-images me-1"></i> Media Library
-                                                </button>
-                                            </li>
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" type="button" role="tab" aria-controls="upload" aria-selected="false">
-                                                    <i class="fas fa-upload me-1"></i> Upload Files
-                                                </button>
-                                            </li>
-                                        </ul>
-                                        
-                                        <div class="tab-content" id="mediaTabContent">
-                                            <!-- Media Library Tab -->
-                                            <div class="tab-pane fade show active" id="media-library" role="tabpanel" aria-labelledby="media-library-tab">
-                                                
-                                                <div class="row">
-
-                                                    <div class="col-9">
-                                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                                            <h6>Media Library</h6>
-                                                            <div class="d-flex align-items-center">
-                                                                <span id="mediaCount" class="badge bg-secondary me-2">Loading...</span>
-                                                                <div class="btn-group" role="group">
-                                                                    <button type="button" class="btn btn-outline-primary btn-sm" id="refreshMedia">
-                                                                        <i class="fas fa-sync-alt"></i> Refresh
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <div class="row" id="mediaLibraryItems">
-                                                            <div class="col-12 text-center py-5">
-                                                                <div class="spinner-border text-primary" role="status">
-                                                                    <span class="visually-hidden">Loading...</span>
-                                                                </div>
-                                                                <p class="mt-2">Loading media library...</p>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <div class="row mt-3" id="loadMoreMediaContainer" style="display: none;">
-                                                            <div class="col-12 text-center">
-                                                                <button type="button" class="btn btn-outline-primary" id="loadMoreMedia">
-                                                                    Load More Images
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Preview Panel -->
-                                                    <div class="col-3" id="previewPanel">
-                                                        <div class="card">
-                                                            <div class="card-header">Image Preview</div>
-                                                            <div class="card-body text-center">
-                                                                <div id="mediaPreviewContainer">
-                                                                    <span class="text-muted">Select an image to preview</span>
-                                                                </div>
-                                                                <div class="mt-3" id="mediaSelectionInfo">
-                                                                    <p class="small text-muted">No image selected</p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                            
-                                            <!-- Upload Tab -->
-                                            <div class="tab-pane fade" id="upload" role="tabpanel" aria-labelledby="upload-tab">
-                                                <div class="row">
-                                                    <div class="col-9">
-                                                        <h6>Upload New File</h6>
-                                                        <p class="text-muted">Select a file to upload to your media library.</p>
-                                                        
-                                                        <div class="mb-3">
-                                                            <label for="mediaUpload" class="form-label">Choose File</label>
-                                                            <input class="form-control" type="file" id="mediaUpload" accept="image/*">
-                                                        </div>
-                                                        
-                                                        <div class="mb-3">
-                                                            <label for="imageTitle" class="form-label">Image Title</label>
-                                                            <input type="text" class="form-control" id="imageTitle" placeholder="Enter image title">
-                                                        </div>
-                                                        
-                                                        <div class="mb-3">
-                                                            <label for="imageAltText" class="form-label">Alt Text</label>
-                                                            <input type="text" class="form-control" id="imageAltText" placeholder="Enter alt text for accessibility">
-                                                        </div>
-                                                        
-                                                        <div class="mb-3">
-                                                            <label for="imageDescription" class="form-label">Description</label>
-                                                            <textarea class="form-control" id="imageDescription" rows="2" placeholder="Optional description"></textarea>
-                                                        </div>
-                                                        
-                                                        <div class="progress mb-3" id="uploadProgress" style="display: none;">
-                                                            <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-                                                        </div>
-                                                        
-                                                        <div class="text-center">
-                                                            <button type="button" class="btn btn-primary" id="uploadMediaBtn" disabled>
-                                                                <i class="fas fa-upload me-1"></i> Upload Image
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <!-- Preview Panel -->
-                                                    <div id="uploadPreviewContainer" class="text-center col-3" style="display: none;">
-                                                        <h6>Image Preview</h6>
-                                                        <div id="uploadPreview" class="border rounded">
-                                                            <span class="text-muted">Preview will appear here</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        
-
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                        <button type="button" class="btn btn-primary" id="selectMediaBtn" disabled>Select Image</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
                         <!-- Pricing Tab -->
                         <div class="tab-pane fade" id="pricing" role="tabpanel" aria-labelledby="pricing-tab">
                             <div class="row">
@@ -626,6 +626,7 @@ if(is_plugin_actived("yoast-seo", $savedPlugins)){
     </div>
 </div>
 
+<!-- Show/Hide Cols-->
 <div class="container column-control-container">
     <div class="row">
         <p>Show/hide columns</p>
@@ -648,8 +649,9 @@ if(is_plugin_actived("yoast-seo", $savedPlugins)){
     </div>
 </div>
 
+<!-- Products Table -->
 <div class="container wpwc-list-container">
-    <!-- Products Table -->
+
     <div class="card">
         <div class="card-body p-0">
             <table id="productsTable" class="table table-hover" style="width:100%">
@@ -662,6 +664,7 @@ if(is_plugin_actived("yoast-seo", $savedPlugins)){
                         <th width="100" class="price-col">Price</th>
                         <th width="100" class="price-col">Sale Price</th>
                         <th width="120" class="stock-col">Stock</th>
+                        <th width="120" class="description-col">Short Description</th>
                         <th width="120" class="description-col">Description</th>
                         <th width="80" class="shipping-col">Weight</th>
                         <th width="80" class="shipping-col">Length</th>
@@ -692,6 +695,7 @@ if(is_plugin_actived("yoast-seo", $savedPlugins)){
                             p.ID, 
                             p.post_title, 
                             p.post_content,
+                            p.post_excerpt,
                             MAX(CASE WHEN pm1.meta_key = '_sku' THEN pm1.meta_value END) AS sku,
                             MAX(CASE WHEN pm1.meta_key = '_regular_price' THEN pm1.meta_value END) AS regular_price,
                             MAX(CASE WHEN pm1.meta_key = '_sale_price' THEN pm1.meta_value END) AS sale_price,
@@ -827,6 +831,9 @@ if(is_plugin_actived("yoast-seo", $savedPlugins)){
                                 <option value="onbackorder" <?= strtolower($product->stock_status) === 'onbackorder' ? 'selected' : '' ?>>onbackorder</option>
                             </select> 
                         </td>
+
+                        <!-- Short Description -->
+                        <td class="editable-cell description-col short-desc-col" contenteditable="true" data-field="post_excerpt" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->post_excerpt) ?>"><?= esc_html($product->post_excerpt) ?></td>
 
                         <!-- Product Content -->
                         <td class="edit-product-content description-col">

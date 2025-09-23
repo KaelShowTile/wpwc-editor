@@ -177,7 +177,8 @@ $(document).ready(function() {
             width: $('#width').val(),
             height: $('#height').val(),
             //shipping_class: $('#shippingClass').val()
-            product_image_id: $('#productImageId').val()
+            product_image_id: $('#productImageId').val(),
+            product_gallery_ids: $('#productGalleryIds').val()
         }
 
         $('input[name="product_categories[]"]:checked').each(function() {
@@ -228,7 +229,13 @@ $(document).ready(function() {
                             $('#addProductModal').modal('hide');
                             // Reset form
                             $('#addProductForm')[0].reset();
-                            $('#imagePreview').html('<span class="text-muted">Image Preview</span>');
+                            //clear thumb
+                            $('#imagePreview').html('<span class="text-muted"></span>');
+                            $('#productImageId').attr('value', "");
+                            //clear gallery
+                            $('#galleryPreview').html('<span class="text-muted"></span>');
+                            $('#productGalleryIds').attr('value', "");
+                            
                             // Reset button state
                             submitBtn.prop('disabled', false).html('Add Product');
                         }, 1500);
