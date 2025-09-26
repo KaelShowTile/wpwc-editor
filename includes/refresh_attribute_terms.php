@@ -20,7 +20,7 @@ $program_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $active_taxonomies = [];
 $stmt = $program_db->query("
     SELECT setting_value 
-    FROM settings 
+    FROM ".$config['db']['prefix']."settings 
     WHERE setting_name = 'attribute'
 ");
 $active_taxonomies = $stmt->fetchAll(PDO::FETCH_COLUMN);

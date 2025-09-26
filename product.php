@@ -86,7 +86,6 @@ if(is_plugin_actived("yoast-seo", $savedPlugins)){
 <script type="text/javascript" src="<?php echo tool_url('/assets/js/product-saving.js'); ?>" id="product-saving-js"></script>
 <script type="text/javascript" src="<?php echo tool_url('/assets/js/product-adding-new.js'); ?>" id="product-adding-new-js"></script>
 <script type="text/javascript" src="<?php echo tool_url('/assets/js/media-library.js'); ?>" id="media-library-js"></script>
-<script type="text/javascript" src="<?php echo tool_url('/assets/js/media-library-gallery.js'); ?>" id="media-library-gallery-js"></script>
 
 <?php if($glint_product_quantity_active == true): ?>
 <script type="text/javascript" src="<?php echo tool_url('/assets/js/glint-quantity-saving.js'); ?>" id="glint-quantity-saving-js"></script>

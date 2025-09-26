@@ -35,7 +35,6 @@ class AttributeStorage {
     refreshFromServer() {
         var currentUrl = window.location.href;
         var baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
-        console.log(baseUrl + '/includes/refresh_attribute_terms.php')
         
         $.ajax({
             url: baseUrl + '/includes/refresh_attribute_terms.php',
@@ -149,11 +148,12 @@ function saveAttributeValue($cell) {
     // Visual feedback
     $cell.addClass('saving');
 
+    /*
     console.log("Sending attribute save request:", {
         product_id: productId,
         taxonomy: taxonomy,
         value: newValue
-    });
+    });*/
     
     var currentUrl = window.location.href;
     var baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));

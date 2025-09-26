@@ -2,6 +2,7 @@
 h1,h2,h3,h4,h5,h6{font-family: "Roboto", sans-serif;font-weight: 600;}
 p,a,span,b,label,td,tr,th{font-family: "Work Sans", sans-serif;} 
 body{font-family: "Work Sans", sans-serif; font-size: 16px;}
+.text-warning{color: rgb(255 80 0) !important;}
 
 .hide-this-area{display: none !important;}
 
@@ -12,9 +13,9 @@ body{font-family: "Work Sans", sans-serif; font-size: 16px;}
 .form-control::placeholder{color: #ccc; font-weight: 300; font-style: italic;}
 
 table.dataTable td, table.dataTable th{min-width: 60px;}
-.container table.dataTable.table-hover>tbody>tr:hover>*{box-shadow: inset 0 0 0 9999px #000; color: #fff;}
-.container table.dataTable>tbody>tr.selected>*{box-shadow: inset 0 0 0 9999px #000;}
-.container table.dataTable.table-hover>tbody>tr.selected:hover>*{box-shadow: inset 0 0 0 9999px #111;}
+.container table.dataTable.table-hover>tbody>tr:hover>*{box-shadow: inset 0 0 0 9999px #ddd !important; color: #000; }
+.container table.dataTable>tbody>tr.selected>*{box-shadow: inset 0 0 0 9999px #ddd !important; color: #000; font-weight: 600;}
+table.dataTable.table-hover>tbody>tr.selected:hover>*{box-shadow: inset 0 0 0 9999px #ddd !important;}
 .container .table>:not(caption)>*>*{border-bottom-width:0;}
 .container table.dataTable>tbody>tr.odd td{background: #fafafa;}
 .container table.dataTable thead>tr th{font-size: 0.8rem; line-height: 1.25; vertical-align: middle;}

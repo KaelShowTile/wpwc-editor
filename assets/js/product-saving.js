@@ -259,7 +259,7 @@ $(document).ready(function() {
                     </div>
                 `);
             });
-            $results.show();
+            $results.show();         
         } else {
             $results.hide();
         }
@@ -438,7 +438,10 @@ $(document).ready(function() {
 
     //show/hide column
     var updateColumn = debounce(function(){
+        updateHideShowCol();
+    }, 0);
 
+    function updateHideShowCol(){
         var isPriceChecked = $('#hide-price-col').is(':checked');
         var isStockChecked = $('#hide-stock-col').is(':checked');
         var isDesChecked = $('#hide-description-col').is(':checked');
@@ -479,7 +482,11 @@ $(document).ready(function() {
         if(isYoastChecked== false){
             $('.yoast-col').hide();
         }
-    }, 0);
+    }
+
+    $('#productsTable_filter').on('input', '.form-control', function(){
+        updateHideShowCol();
+    });
 
     function debounce(func, wait) {
         let timeout;
