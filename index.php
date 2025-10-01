@@ -39,7 +39,7 @@ if (!empty($_SESSION['login_error'])) {
                 <?php endif; ?>
                 
                 <form method="post">
-                    <h2>WordPress Login</h2>
+                    <p>Please use WordPress admin account for login</p>
                     <input type="text" name="username" placeholder="Username" required>
                     <input type="password" name="password" placeholder="Password" required>
                     <label class="hide-this-area"><input type="checkbox" name="remember"> Remember me </label>

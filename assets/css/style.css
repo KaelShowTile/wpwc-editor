@@ -35,7 +35,7 @@ table.dataTable thead>tr>th.sorting:before, table.dataTable thead>tr>th.sorting:
 header{display: inline-block; width: 100%; margin-bottom: 20px; background: #fafafa;}
 header .container{padding: 10px 0 15px;}
 header .logo-container{float: left;}
-header .logo-container img{max-width: 150px;}
+header .logo-container img{max-width: 200px; width: 100%;}
 header nav{float: right;}
 header nav .menu-list{margin-bottom: 0;}
 header nav .menu-list .menu-item{list-style: none; display: inline-block; padding: 10px 20px 0;}

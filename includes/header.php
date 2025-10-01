@@ -48,6 +48,11 @@ require_once __DIR__.'/../functions.php';
 $config = require __DIR__.'/../includes/config.php';
 require_once $config['wordpress']['path'].'/wp-load.php';
 
+$logo_url = get_site_logo_url();
+if(!$logo_url){
+    $logo_url = tool_url('/assets/img/logo.svg');
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -71,7 +76,7 @@ require_once $config['wordpress']['path'].'/wp-load.php';
 
                 <div class="col">
                     <div class="logo-container">
-                        <img src="<?php echo tool_url('/assets/img/logo.svg'); ?>">
+                        <img src="<?php echo $logo_url; ?>">
                     </div>
                 </div>
 

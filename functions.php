@@ -44,3 +44,46 @@ function wpe_log($message) {
 
     echo '<!-- DEBUG: '.htmlspecialchars($message).' -->';
 }
+
+function get_site_logo_url(){
+    static $logo_url = null;
+
+    if ($logo_url !== null) {
+        return $logo_url;
+    }
+
+    try {
+        // Load configuration
+        $config = require __DIR__.'/includes/config.php';
+
+        // Connect to database
+        $db = new PDO(
+            "mysql:host={$config['db']['host']};dbname={$config['db']['name']};charset=utf8mb4",
+            $config['db']['user'],
+            $config['db']['password'],
+            [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_EMULATE_PREPARES => false
+            ]
+        );
+
+        // Query for logo URL setting
+        $stmt = $db->prepare("
+            SELECT setting_value
+            FROM `{$config['db']['prefix']}settings`
+            WHERE setting_name = :setting_name
+            LIMIT 1
+        ");
+
+        $stmt->execute([':setting_name' => 'log-url']);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $logo_url = $result ? $result['setting_value'] : '';
+
+    } catch (Exception $e) {
+        wpe_log('Error getting site logo URL: ' . $e->getMessage());
+        $logo_url = '';
+    }
+
+    return $logo_url;
+}

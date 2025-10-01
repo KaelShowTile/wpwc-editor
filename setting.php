@@ -10,20 +10,37 @@ $savedPlugins = get_actived_plugins($config['db']['host'], $config['db']['name']
 
 ?>
 
-<script type="text/javascript" src="<?php echo tool_url('/assets/js/setting.js'); ?>" id="attribute-js"></script>
+<script type="text/javascript" src="<?php echo tool_url('/assets/js/setting.js'); ?>" id="setting-js"></script>
 
 <div class="container setting-container">
     
     <div class="d-flex align-items-start">
         <!-- Tab menu -->
         <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-            <button class="nav-link active" id="database-setting-tab" data-bs-toggle="pill" data-bs-target="#database-setting-panel" type="button" role="tab" aria-controls="database-setting-panel" aria-selected="true">Database</button>
+            <button class="nav-link active" id="general-setting-tab" data-bs-toggle="pill" data-bs-target="#general-setting-panel" type="button" role="tab" aria-controls="general-setting-panel" aria-selected="true">General</button>
+            <button class="nav-link" id="database-setting-tab" data-bs-toggle="pill" data-bs-target="#database-setting-panel" type="button" role="tab" aria-controls="database-setting-panel" aria-selected="true">Database</button>           
             <button class="nav-link" id="wordpress-setting-tab" data-bs-toggle="pill" data-bs-target="#wordpress-setting-panel" type="button" role="tab" aria-controls="wordpress-setting-panel" aria-selected="true">WordPress</button>
             <button class="nav-link" id="plugin-setting-tab" data-bs-toggle="pill" data-bs-target="#plugin-setting-panel" type="button" role="tab" aria-controls="plugin-setting-panel" aria-selected="false">Plugin</button>
         </div>
         <!-- Tab content -->
         <div class="tab-content" id="v-pills-tabContent">
-            <div class="tab-pane fade show active" id="database-setting-panel" role="tabpanel" aria-labelledby="database-setting-panel" tabindex="0">
+            <div class="tab-pane fade show active" id="general-setting-panel" role="tabpanel" aria-labelledby="general-setting-panel" tabindex="0">
+                <!-- general setting -->
+                <div class="setting-header">
+                    <h3>General Setting</h3></br>
+                    <p class="tab-panel-des">Customize your editor!</p>
+                    <button id="saveGeneralSettingBtn" class="btn btn-primary btn-action save-btn">
+                        <i class="fas fa-save me-1"></i> Save Settings
+                    </button>
+                </div>
+
+                <div class="setting-input-container">
+                    <p>Logo</p>
+                    <input type="text" class="form-control general-setting-input" placeholder="www.example.com/example.jpg" aria-label="log-url" value="<?php echo get_site_logo_url()?>">
+                </div>
+            </div>
+
+            <div class="tab-pane fade show" id="database-setting-panel" role="tabpanel" aria-labelledby="database-setting-panel" tabindex="0">
                 <!-- database setting -->
                 <div class="setting-header">
                     <h3>Database Setting</h3></br>
@@ -134,5 +151,4 @@ $savedPlugins = get_actived_plugins($config['db']['host'], $config['db']['name']
 
 </div>
 
-<script type="text/javascript" src="<?php echo tool_url('/assets/js/setting.js'); ?>" id="setting-js"></script>
 <?php require_once __DIR__.'/includes/footer.php';

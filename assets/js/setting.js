@@ -49,6 +49,60 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
     });
+
+    document.getElementById('saveGeneralSettingBtn').addEventListener('click', function() {
+        const saveBtn = this;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Saving...';
+        saveBtn.disabled = true;
+
+        // Collect all general settings
+        const settings = [];
+        document.querySelectorAll('.general-setting-input').forEach(input => {
+            const settingName = input.getAttribute('aria-label');
+            const settingValue = input.value.trim();
+            if (settingName) {
+                settings.push({
+                    setting_name: settingName,
+                    setting_value: settingValue
+                });
+            }
+        });
+
+        // Prepare data to send
+        const dataToSend = {
+            settings: settings
+        };
+
+        // Get base URL - more reliable method
+        const currentPath = window.location.pathname;
+        const basePath = currentPath.substring(0, currentPath.lastIndexOf('/'));
+        const url = window.location.origin + basePath + '/includes/save_general_setting.php';
+
+        // Send to server
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataToSend)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('success', 'General settings saved successfully!');
+            } else {
+                showAlert('danger', 'Error: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            showAlert('danger', 'Network error: ' + error.message);
+        })
+        .finally(() => {
+            saveBtn.innerHTML = '<i class="fas fa-save me-1"></i> Save Settings';
+            saveBtn.disabled = false;
+        });
+
+    });
     
     // Helper function to show alerts
     function showAlert(type, message) {
