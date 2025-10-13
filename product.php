@@ -33,7 +33,7 @@ try {
     ");
     $active_taxonomies = $stmt->fetchAll(PDO::FETCH_COLUMN);
 } catch (PDOException $e) {
-    error_log('Error fetching active taxonomies: ' . $e->getMessage());
+    wpe_log('Error fetching active taxonomies: ' . $e->getMessage());
 }
 
 // Get attribute taxonomy names
@@ -84,6 +84,7 @@ if(is_plugin_actived("yoast-seo", $savedPlugins)){
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
 <script type="text/javascript" src="<?php echo tool_url('/assets/js/product-attribute.js'); ?>" id="products-attribute-js"></script>
 <script type="text/javascript" src="<?php echo tool_url('/assets/js/product-saving.js'); ?>" id="product-saving-js"></script>
+<script type="text/javascript" src="<?php echo tool_url('/assets/js/update-queue.js'); ?>" id="update-queue-js"></script>
 <script type="text/javascript" src="<?php echo tool_url('/assets/js/product-adding-new.js'); ?>" id="product-adding-new-js"></script>
 <script type="text/javascript" src="<?php echo tool_url('/assets/js/media-library.js'); ?>" id="media-library-js"></script>
 
@@ -625,6 +626,66 @@ if(is_plugin_actived("yoast-seo", $savedPlugins)){
     </div>
 </div>
 
+<!-- Update Queue Modal -->
+<div class="modal fade" id="updateQueueModal" tabindex="-1" aria-labelledby="updateQueueModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateQueueModalLabel">
+                    <i class="fas fa-clock me-2"></i>Update Queue
+                    <span class="badge bg-primary ms-2" id="queue-count">0</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="no-queue text-center py-4">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                    <h5>All updates processed!</h5>
+                    <p class="text-muted">No pending updates in the queue.</p>
+                </div>
+                <div class="queue-list" style="display: none;">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Updates are being processed sequentially to prevent server overload.
+                        Please wait for all updates to complete before closing this window.
+                    </div>
+                    <div class="queue-items">
+                        <!-- Queue items will be populated here -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-info" onclick="showUpdateHistory()">
+                    <i class="fas fa-history me-1"></i>View History
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update History Modal -->
+<div class="modal fade" id="updateHistoryModal" tabindex="-1" aria-labelledby="updateHistoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateHistoryModalLabel">
+                    <i class="fas fa-history me-2"></i>Update History
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="history-list">
+                    <!-- History items will be populated here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Show/Hide Cols-->
 <div class="container column-control-container">
     <div class="row">
@@ -646,6 +707,11 @@ if(is_plugin_actived("yoast-seo", $savedPlugins)){
             <?php endif; ?> 
         </ul>
     </div>
+</div>
+
+<!-- update Queue -->
+<div class="update-queue container">
+
 </div>
 
 <!-- Products Table -->

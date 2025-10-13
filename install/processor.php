@@ -31,11 +31,11 @@ try {
             `setting_value` TEXT,
             `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     ");
 
     // Create attribute table
-     $db->exec("
+    $db->exec("
         CREATE TABLE IF NOT EXISTS `{$prefix}attributes` (
             `id` INT AUTO_INCREMENT PRIMARY KEY,
             `attribute_id` VARCHAR(50) NOT NULL UNIQUE,
@@ -43,7 +43,27 @@ try {
             `attribute_cat` VARCHAR(255) NOT NULL,
             `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ");
+
+    // Create history table
+    $db->exec("
+        CREATE TABLE IF NOT EXISTS `{$prefix}update_history` (
+            `id` INT(11) NOT NULL AUTO_INCREMENT,
+            `product_id` INT(11) NOT NULL,
+            `field_name` VARCHAR(255) NOT NULL,
+            `old_value` TEXT,
+            `new_value` TEXT NOT NULL,
+            `user_identifier` VARCHAR(255),
+            `timestamp` DATETIME DEFAULT CURRENT_TIMESTAMP,
+            `status` ENUM('pending', 'processing', 'completed', 'failed') DEFAULT 'pending',
+            `request_data` JSON,
+            `error_message` TEXT,
+            PRIMARY KEY (`id`),
+            INDEX `idx_product_field` (`product_id`, `field_name`),
+            INDEX `idx_status_timestamp` (`status`, `timestamp`),
+            INDEX `idx_timestamp` (`timestamp`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     ");
     
 } catch (PDOException $e) {

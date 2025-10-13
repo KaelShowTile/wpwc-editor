@@ -83,6 +83,6 @@ try {
     
     echo json_encode(['success' => true]);
 } catch (Exception $e) {
-    error_log('Save attribute error: ' . $e->getMessage());
+    wpe_log('Save attribute error: ' . $e->getMessage());
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }

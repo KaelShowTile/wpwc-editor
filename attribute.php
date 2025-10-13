@@ -39,9 +39,9 @@ function get_actived_attributes_taxonomy($db_host, $db_name, $db_prefix, $user, 
         $getAttributes = $stmt->fetchAll(PDO::FETCH_COLUMN, 0); // Get first column as array
         
     } catch (PDOException $e) {
-        error_log('PDO Error: ' . $e->getMessage());
+        wpe_log('PDO Error: ' . $e->getMessage());
     } catch (Exception $e) {
-        error_log('General Error: ' . $e->getMessage());
+        wpe_log('General Error: ' . $e->getMessage());
     } finally {
         // Clean up resources
         $stmt = null;
@@ -76,9 +76,9 @@ function get_saved_product_attributes($db_host, $db_name, $db_prefix, $user, $pa
         $getAttributes = $stmt->fetchAll();
         
     } catch (PDOException $e) {
-        error_log('PDO Error: ' . $e->getMessage());
+        wpe_log('PDO Error: ' . $e->getMessage());
     } catch (Exception $e) {
-        error_log('General Error: ' . $e->getMessage());
+        wpe_log('General Error: ' . $e->getMessage());
     } finally {
         // Clean up resources
         $stmt = null;

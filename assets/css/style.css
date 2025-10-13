@@ -117,6 +117,11 @@ header nav .menu-list .menu-item a:hover{color:#000;}
 #galleryPreview .selected-image-thumb{position: relative;}
 #galleryPreview .selected-image-thumb .btn-remove-image{ position: absolute; right: 0; border-width: 0; background: rgba(255, 255, 255, 0.5);}
 
+.update-queue{position: fixed; z-index: 999; top: 5px; width: 40%; padding: 5px; margin: 0 30%; max-height: 120px; overflow-y: scroll; box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.1); border-radius: 5px; background: #fff;}
+.update-queue .alert-info{padding: 2px 10px; margin-bottom: 0; font-size: 0.8rem;}
+.update-queue .alert-info .btn-outline-info{font-size: 0.7rem; line-height: 0.7rem;}
+.update-queue .queue-item{font-size: 0.8rem; padding: 2px 10px !important; border-bottom: 1px dashed #eee !important;}
+
 /* setting */
 .setting-container{min-height: calc(100vh - 120px); padding: 20px 0;}
 .setting-container .nav-pills{margin-right: 60px;}

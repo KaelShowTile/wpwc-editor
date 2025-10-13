@@ -86,7 +86,8 @@ function saveFieldValue($field) {
     const productId = $field.data('productid');
     const field = $field.data('field');
     let value = $field.text().trim();
-    
+    const originalValue = $field.data('original');
+
     // For price fields, convert to number
     if ($field.hasClass('price-field')) {
         value = parseFloat(value.replace(/[^\d.]/g, ''));
@@ -94,41 +95,33 @@ function saveFieldValue($field) {
             value = '';
         }
     }
-    
+
     // Visual feedback
     $field.addClass('saving');
 
-    var currentUrl = window.location.href;
-    var baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
-    
-    // Save to server
-    $.ajax({
-        url: baseUrl + '/includes/save_product_field.php',
-        method: 'POST',
-        data: {
-            product_id: productId,
-            field: field,
-            value: value
-        },
-        success: function() {
-            $field.removeClass('saving').addClass('saved');
-            setTimeout(() => $field.removeClass('saved'), 2000);
-            
-            // Update original value
-            $field.data('original', value);
-            
-            // For price fields, format after save
-            if ($field.hasClass('price-field') && value) {
-                $field.text(wc_price(value));
-            }
-        },
-        error: function() {
-            $field.removeClass('saving').addClass('error');
-            setTimeout(() => $field.removeClass('error'), 2000);
-            
-            // Revert to original value on error
-            $field.text($field.data('original'));
+    // Add to update queue
+    addToUpdateQueue({
+        product_id: productId,
+        field_name: field,
+        new_value: value,
+        old_value: originalValue
+    }).then(() => {
+        $field.removeClass('saving').addClass('saved');
+        setTimeout(() => $field.removeClass('saved'), 2000);
+
+        // Update original value
+        $field.data('original', value);
+
+        // For price fields, format after save
+        if ($field.hasClass('price-field') && value) {
+            $field.text(wc_price(value));
         }
+    }).catch(() => {
+        $field.removeClass('saving').addClass('error');
+        setTimeout(() => $field.removeClass('error'), 2000);
+
+        // Revert to original value on error
+        $field.text($field.data('original'));
     });
 }
 
@@ -139,44 +132,26 @@ function saveAttributeValue($cell) {
     const newValue = $input.val();
     const taxonomy = $input.data('taxonomy');
     const productId = $cell.data('productid');
-    
+
     // Update display
     $valueDiv.text(newValue);
     $valueDiv.show();
     $cell.find('.attribute-input').hide();
-    
+
     // Visual feedback
     $cell.addClass('saving');
 
-    /*
-    console.log("Sending attribute save request:", {
+    // Add to update queue
+    addToUpdateQueue({
         product_id: productId,
-        taxonomy: taxonomy,
-        value: newValue
-    });*/
-    
-    var currentUrl = window.location.href;
-    var baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
-
-    // Save to server
-    $.ajax({
-        url: baseUrl + '/includes/save_product_attribute.php',
-        method: 'POST',
-        data: {
-            product_id: productId,
-            taxonomy: taxonomy,
-            value: newValue
-        },
-        success: function() {
-            $cell.removeClass('saving').addClass('saved');
-            setTimeout(() => $cell.removeClass('saved'), 2000);
-        },
-        error: function() {
-            $cell.removeClass('saving').addClass('error');
-            setTimeout(() => $cell.removeClass('error'), 2000);
-        }
+        field_name: 'attribute',
+        new_value: newValue,
+        taxonomy: taxonomy
+    }).then(() => {
+        $cell.removeClass('saving').addClass('saved');
+        setTimeout(() => $cell.removeClass('saved'), 2000);
+    }).catch(() => {
+        $cell.removeClass('saving').addClass('error');
+        setTimeout(() => $cell.removeClass('error'), 2000);
     });
 }
-
-
-

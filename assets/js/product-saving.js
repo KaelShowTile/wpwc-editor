@@ -360,36 +360,32 @@ $(document).ready(function() {
             $select.prop('disabled', true).addClass('saving');
             $select.after('<span class="saving-indicator"></span>');
 
-            var currentUrl = window.location.href;
-            var baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
+            console.log("Prepare to add to queue!");
 
-            $.ajax({
-                url: baseUrl + '/includes/save_product_stock.php',
-                method: 'POST',
-                data: {
-                    product_id: productId,
-                    status: newStatus
-                },
-                success: function() {
-                    $select.removeClass('saving').data('original', newStatus);
-                    $select.siblings('.saving-indicator').remove();
-                    $select.prop('disabled', false);
-                    
-                    // Show success badge
-                    const $badge = $(`<span class="badge bg-success position-absolute top-0 start-100 translate-middle">Saved!</span>`);
-                    $select.parent().append($badge);
-                    setTimeout(() => $badge.fadeOut(500, () => $badge.remove()), 2000);
-                },
-                error: function() {
-                    $select.removeClass('saving').prop('disabled', false)
-                        .siblings('.saving-indicator').remove();
-                    $select.val(originalStatus); // Revert to original value
-                    
-                    // Show error badge
-                    const $badge = $(`<span class="badge bg-danger position-absolute top-0 start-100 translate-middle">Error!</span>`);
-                    $select.parent().append($badge);
-                    setTimeout(() => $badge.fadeOut(500, () => $badge.remove()), 2000);
-                }
+            // Add to update queue
+            addToUpdateQueue({
+                product_id: productId,
+                field_name: 'stock_status',
+                new_value: newStatus,
+                old_value: originalStatus
+            }).then(() => {
+                $select.removeClass('saving').data('original', newStatus);
+                $select.siblings('.saving-indicator').remove();
+                $select.prop('disabled', false);
+
+                // Show success badge
+                const $badge = $(`<span class="badge bg-success position-absolute top-0 start-100 translate-middle">Saved!</span>`);
+                $select.parent().append($badge);
+                setTimeout(() => $badge.fadeOut(500, () => $badge.remove()), 2000);
+            }).catch(() => {
+                $select.removeClass('saving').prop('disabled', false)
+                    .siblings('.saving-indicator').remove();
+                $select.val(originalStatus); // Revert to original value
+
+                // Show error badge
+                const $badge = $(`<span class="badge bg-danger position-absolute top-0 start-100 translate-middle">Error!</span>`);
+                $select.parent().append($badge);
+                setTimeout(() => $badge.fadeOut(500, () => $badge.remove()), 2000);
             });
         }
     });
@@ -399,40 +395,16 @@ $(document).ready(function() {
         const productId = $(this).data('id');
         const productContent = $(this).closest('.modal-footer').siblings('.modal-body').find('textarea').val();
         const button = $(this);
-        
-        var currentUrl = window.location.href;
-        var baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
 
-        console.log(productId);
-        console.log(productContent);
-        
-        console.log(baseUrl + '/includes/save_product_content.php');
-        // AJAX request
-        $.ajax({
-            url: baseUrl + '/includes/save_product_content.php',
-            type: 'POST',
-            data: {
-                product_id: productId,
-                content: productContent
-            },
-            success: function(response) {
-                console.log('Raw response:', response); // Log the full response
-                try {
-                    var jsonResponse = JSON.parse(response);
-                    if (jsonResponse.status === 'success') {
-                        alert(jsonResponse.message);
-                    } else {
-                        alert('Error: ' + jsonResponse.message);
-                    }
-                } catch (e) {
-                    console.error('Parsing error:', e);
-                    alert('Unexpected response format.');
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.error('AJAX error:', textStatus, errorThrown);
-                alert('Error saving description: ' + errorThrown);
-            }
+        // Add to update queue
+        addToUpdateQueue({
+            product_id: productId,
+            field_name: 'post_content',
+            new_value: productContent
+        }).then(() => {
+            //alert('Description saved successfully!');
+        }).catch(() => {
+            alert('Error saving description.');
         });
     });
 
