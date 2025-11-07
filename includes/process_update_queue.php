@@ -22,6 +22,86 @@ $program_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $table_name = $config['db']['prefix'] . 'update_history';
 
+function glint_quantity_step_update($product_id, $product_step){
+    $table_name = $config['db']['prefix'] . 'glint_product_qty';
+
+    // Check if record exists
+    $exists = $wpdb->get_var($wpdb->prepare(
+        "SELECT meta_id FROM $table_name WHERE post_id = %d",
+        $product_id
+    ));
+    
+    if ($exists) {
+        // Update existing record
+        $result = $wpdb->update(
+            $table_name,
+            ['glint_qty_step' => $product_step],
+            ['post_id' => $product_id],
+            ['%s'],  // Step value format
+            ['%d']   // Product ID format
+        );
+        
+        if ($result === false) {
+            throw new Exception('Failed to update quantity suffix');
+        }
+    } else {
+        // Insert new record
+        $result = $wpdb->insert(
+            $table_name,
+            [
+                'post_id' => $product_id,
+                'glint_qty_suffix' => '',  // Default empty suffix
+                'glint_qty_step' => $product_step
+            ],
+            ['%d', '%s', '%s']  // Data formats
+        );
+        
+        if ($result === false) {
+            throw new Exception('Failed to insert quantity suffix');
+        }
+    }
+}
+
+function glint_quantity_suffix_update($product_id, $product_prefix){
+    $table_name = $config['db']['prefix'] . 'glint_product_qty';
+
+    // Check if record exists
+    $exists = $wpdb->get_var($wpdb->prepare(
+        "SELECT meta_id FROM $table_name WHERE post_id = %d",
+        $product_id
+    ));
+    
+    if ($exists) {
+        // Update existing record
+        $result = $wpdb->update(
+            $table_name,
+            ['glint_qty_suffix' => $product_prefix],
+            ['post_id' => $product_id],
+            ['%s'],  // Suffix format
+            ['%d']   // Product ID format
+        );
+        
+        if ($result === false) {
+            throw new Exception('Failed to update quantity suffix');
+        }
+    } else {
+        // Insert new record
+        $result = $wpdb->insert(
+            $table_name,
+            [
+                'post_id' => $product_id,
+                'glint_qty_suffix' => $product_prefix,
+                'glint_qty_step' => 1  // Default step value
+            ],
+            ['%d', '%s', '%s']  // Data formats
+        );
+        
+        if ($result === false) {
+            throw new Exception('Failed to insert quantity suffix');
+        }
+    }
+}
+
 try {
     //wpe_log('start process the queue.');
     // Get one pending update
@@ -88,10 +168,13 @@ try {
                 $success = true;
                 break;
 
-            case '_quantity_step':
-            case '_quantity_suffix':
-                // Glint quantity fields
-                update_post_meta($product_id, $field_name, $new_value);
+            case 'glint_qty_step':
+                glint_quantity_step_update($product_id, $new_value)
+                $success = true;
+                break;
+                
+            case 'glint_qty_suffix':
+                glint_quantity_suffix_update($product_id, $new_value)
                 $success = true;
                 break;
 

@@ -978,7 +978,7 @@ if(is_plugin_actived("yoast-seo", $savedPlugins)){
                         <td class="quantity-col">
                             <div class="editable-field glint-product-step" 
                                 contenteditable="true"
-                                data-field="_quantity_step"
+                                data-field="glint_qty_step"
                                 data-productid="<?= $product->ID ?>"
                                 data-original="<?= esc_attr($product->glint_qty_step) ?>">
                                 <?= esc_html(($product->glint_qty_step)) ?>         

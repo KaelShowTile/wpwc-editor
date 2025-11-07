@@ -49,7 +49,7 @@ function updateQuantityStep($field){
     // Add to update queue
     addToUpdateQueue({
         product_id: productId,
-        field_name: '_quantity_step',
+        field_name: 'glint_qty_step',
         new_value: newValue,
         old_value: originalValue
     }).then(() => {
