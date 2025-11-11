@@ -1,6 +1,7 @@
 <?php
 header('Content-Type: application/json');
 require_once __DIR__.'/../functions.php';
+require_once __DIR__.'/../includes/load_intergrations.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -20,87 +21,14 @@ $program_db = new PDO(
 );
 $program_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+$savedPlugins = get_actived_plugins($config['db']['host'], $config['db']['name'], $config['db']['prefix'], $config['db']['user'], $config['db']['password']);
+
+if(is_plugin_actived("glint-product-quantity", $savedPlugins)){
+    require_once __DIR__.'/../plugins/glint-quantity-functions.php';
+}
+
 $table_name = $config['db']['prefix'] . 'update_history';
 
-function glint_quantity_step_update($product_id, $product_step){
-    $table_name = $config['db']['prefix'] . 'glint_product_qty';
-
-    // Check if record exists
-    $exists = $wpdb->get_var($wpdb->prepare(
-        "SELECT meta_id FROM $table_name WHERE post_id = %d",
-        $product_id
-    ));
-    
-    if ($exists) {
-        // Update existing record
-        $result = $wpdb->update(
-            $table_name,
-            ['glint_qty_step' => $product_step],
-            ['post_id' => $product_id],
-            ['%s'],  // Step value format
-            ['%d']   // Product ID format
-        );
-        
-        if ($result === false) {
-            throw new Exception('Failed to update quantity suffix');
-        }
-    } else {
-        // Insert new record
-        $result = $wpdb->insert(
-            $table_name,
-            [
-                'post_id' => $product_id,
-                'glint_qty_suffix' => '',  // Default empty suffix
-                'glint_qty_step' => $product_step
-            ],
-            ['%d', '%s', '%s']  // Data formats
-        );
-        
-        if ($result === false) {
-            throw new Exception('Failed to insert quantity suffix');
-        }
-    }
-}
-
-function glint_quantity_suffix_update($product_id, $product_prefix){
-    $table_name = $config['db']['prefix'] . 'glint_product_qty';
-
-    // Check if record exists
-    $exists = $wpdb->get_var($wpdb->prepare(
-        "SELECT meta_id FROM $table_name WHERE post_id = %d",
-        $product_id
-    ));
-    
-    if ($exists) {
-        // Update existing record
-        $result = $wpdb->update(
-            $table_name,
-            ['glint_qty_suffix' => $product_prefix],
-            ['post_id' => $product_id],
-            ['%s'],  // Suffix format
-            ['%d']   // Product ID format
-        );
-        
-        if ($result === false) {
-            throw new Exception('Failed to update quantity suffix');
-        }
-    } else {
-        // Insert new record
-        $result = $wpdb->insert(
-            $table_name,
-            [
-                'post_id' => $product_id,
-                'glint_qty_suffix' => $product_prefix,
-                'glint_qty_step' => 1  // Default step value
-            ],
-            ['%d', '%s', '%s']  // Data formats
-        );
-        
-        if ($result === false) {
-            throw new Exception('Failed to insert quantity suffix');
-        }
-    }
-}
 
 try {
     //wpe_log('start process the queue.');
@@ -154,7 +82,6 @@ try {
 
             case 'stock_status':
                 // Stock status
-                //wpe_log('updating stock status...');
                 update_post_meta($product_id, '_stock_status', $new_value);
                 $success = true;
                 break;
@@ -169,12 +96,12 @@ try {
                 break;
 
             case 'glint_qty_step':
-                glint_quantity_step_update($product_id, $new_value)
+                glint_quantity_step_update($product_id, $new_value, $config);
                 $success = true;
                 break;
                 
             case 'glint_qty_suffix':
-                glint_quantity_suffix_update($product_id, $new_value)
+                glint_quantity_suffix_update($product_id, $new_value, $config);
                 $success = true;
                 break;
 
