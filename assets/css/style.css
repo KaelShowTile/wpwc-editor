@@ -3,13 +3,11 @@ h1,h2,h3,h4,h5,h6{font-family: "Roboto", sans-serif;font-weight: 600;}
 p,a,span,b,label,td,tr,th{font-family: "Work Sans", sans-serif;} 
 body{font-family: "Work Sans", sans-serif; font-size: 16px;}
 .text-warning{color: rgb(255 80 0) !important;}
-
 .hide-this-area{display: none !important;}
 
 .page-header-container{margin: 20px 0 40px;}
 .page-header-container h1{margin-bottom: 0;}
 .d-flex.btns-align-right{width: 100%; text-align: right; display: inline-block !important;}
-
 .form-control::placeholder{color: #ccc; font-weight: 300; font-style: italic;}
 
 table.dataTable td, table.dataTable th{min-width: 60px;}
@@ -22,20 +20,27 @@ table.dataTable.table-hover>tbody>tr.selected:hover>*{box-shadow: inset 0 0 0 99
 .container table.dataTable>tbody>tr td{font-size: 0.8rem; line-height: 1.25;}
 .container table.dataTable tr td .form-select{font-size: 0.8rem; padding: 5px 30px 5px 8px; background-position: right .5rem center;}
 .container table.dataTable tr td button{font-size: 0.8rem;}
-
 table.dataTable thead>tr>th.sorting, table.dataTable thead>tr>th.sorting_asc, table.dataTable thead>tr>th.sorting_desc, table.dataTable thead>tr>th.sorting_asc_disabled, table.dataTable thead>tr>th.sorting_desc_disabled, table.dataTable thead>tr>td.sorting, table.dataTable thead>tr>td.sorting_asc, table.dataTable thead>tr>td.sorting_desc, table.dataTable thead>tr>td.sorting_asc_disabled, table.dataTable thead>tr>td.sorting_desc_disabled{padding: 3px 20px 3px 22px;}
-
 table.dataTable thead>tr>th.sorting:before, table.dataTable thead>tr>th.sorting:after, table.dataTable thead>tr>th.sorting_asc:before, table.dataTable thead>tr>th.sorting_asc:after, table.dataTable thead>tr>th.sorting_desc:before, table.dataTable thead>tr>th.sorting_desc:after, table.dataTable thead>tr>th.sorting_asc_disabled:before, table.dataTable thead>tr>th.sorting_asc_disabled:after, table.dataTable thead>tr>th.sorting_desc_disabled:before, table.dataTable thead>tr>th.sorting_desc_disabled:after, table.dataTable thead>tr>td.sorting:before, table.dataTable thead>tr>td.sorting:after, table.dataTable thead>tr>td.sorting_asc:before, table.dataTable thead>tr>td.sorting_asc:after, table.dataTable thead>tr>td.sorting_desc:before, table.dataTable thead>tr>td.sorting_desc:after, table.dataTable thead>tr>td.sorting_asc_disabled:before, table.dataTable thead>tr>td.sorting_asc_disabled:after, table.dataTable thead>tr>td.sorting_desc_disabled:before, table.dataTable thead>tr>td.sorting_desc_disabled:after{  left: 6px; right: auto;}
 
 .wpwc-list-container .action-bar button{padding: 7px 15px 5px;}
 .wpwc-list-container .action-bar i.fas{margin-right: 0 !important;}
+
+.preload-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.95); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;}
+.preload-spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #007bff; border-radius: 50%; animation: spin 1s linear infinite;}
+.preload-text { margin-top: 20px; font-size: 18px; color: #333; font-weight: 500;}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 
 
 /* header */
 header{display: inline-block; width: 100%; margin-bottom: 20px; background: #fafafa;}
 header .container{padding: 10px 0 15px;}
 header .logo-container{float: left;}
-header .logo-container img{max-width: 200px; width: 100%;}
+header .logo-container img{max-width: 200px; max-height: 34px; width: 100%;}
 header nav{float: right;}
 header nav .menu-list{margin-bottom: 0;}
 header nav .menu-list .menu-item{list-style: none; display: inline-block; padding: 10px 20px 0;}

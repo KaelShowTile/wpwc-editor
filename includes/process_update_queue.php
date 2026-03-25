@@ -113,33 +113,6 @@ try {
                         $taxonomy_id = $new_attr;
                     }
 
-                    // Get existing product attributes
-                    $product_attributes = $product->get_attributes();
-
-                    // Check if attribute exists on product
-                    $attribute_exists = isset($product_attributes[$taxonomy]);
-
-                    if (!$attribute_exists) {
-                        // Create new attribute configuration
-                        $attribute = new WC_Product_Attribute();
-
-                        // CRITICAL: Set taxonomy flag correctly
-                        $attribute->set_id($taxonomy_id);
-                        $attribute->set_name($taxonomy);
-                        $attribute->set_visible(true);
-                        $attribute->set_variation(false);
-
-                        // Set is_taxonomy flag through the options array
-                        $options = $attribute->get_options();
-                        $options['is_taxonomy'] = 1; // 1 = true for taxonomy attributes
-
-                        // For taxonomy attributes, we don't store values in options
-                        $options['value'] = '';
-                        $attribute->set_options($options);
-
-                        $product_attributes[$taxonomy] = $attribute;
-                    }
-
                     // Process terms
                     $terms = !empty($new_value) ? array_map('trim', explode(',', $new_value)) : [];
 
@@ -149,16 +122,35 @@ try {
                         if (!term_exists($term_name, $taxonomy)) {
                             $new_term = wp_insert_term($term_name, $taxonomy);
                             if (!is_wp_error($new_term)) {
-                                $term_ids[] = $new_term['term_id'];
+                                $term_ids[] = (int) $new_term['term_id'];
                             }
                         } else {
                             $term = get_term_by('name', $term_name, $taxonomy);
-                            $term_ids[] = $term->term_id;
+                            $term_ids[] = (int) $term->term_id;
                         }
                     }
 
-                    // Set terms to product
-                    wp_set_object_terms($product_id, $term_ids, $taxonomy, false);
+                    // Get existing product attributes
+                    $product_attributes = $product->get_attributes();
+
+                    // Check if attribute exists on product
+                    $attribute_exists = isset($product_attributes[$taxonomy]);
+
+                    if (!$attribute_exists) {
+                        // Create new attribute configuration
+                        $attribute = new WC_Product_Attribute();
+                        $attribute->set_id($taxonomy_id);
+                        $attribute->set_name($taxonomy);
+                        $attribute->set_visible(true);
+                        $attribute->set_variation(false);
+                    } else {
+                        // Clone the object so WooCommerce detects a change in the attributes array
+                        $attribute = clone $product_attributes[$taxonomy];
+                    }
+
+                    // For taxonomy attributes, we set the term IDs in the options array
+                    $attribute->set_options($term_ids);
+                    $product_attributes[$taxonomy] = $attribute;
 
                     // Update product attributes
                     $product->set_attributes($product_attributes);

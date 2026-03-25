@@ -96,6 +96,12 @@ if(is_plugin_actived("yoast-seo", $savedPlugins)){
 <script type="text/javascript" src="<?php echo tool_url('/assets/js/yoast-seo-saving.js'); ?>" id="yoast-seo-saving-js"></script>
 <?php endif; ?>
 
+<!-- Preload Overlay -->
+<div id="preloadOverlay" class="preload-overlay">
+    <div class="preload-spinner"></div>
+    <div class="preload-text">Loading products...</div>
+</div>
+
 <div class="container">
 
     <div class="page-header-container">
@@ -770,7 +776,8 @@ if(is_plugin_actived("yoast-seo", $savedPlugins)){
                             MAX(CASE WHEN pm1.meta_key = '_width' THEN pm1.meta_value END) AS width,
                             MAX(CASE WHEN pm1.meta_key = '_height' THEN pm1.meta_value END) AS height,
                             MAX(CASE WHEN pm1.meta_key = 'unitperpallet' THEN pm1.meta_value END) AS pallet,
-                            MAX(CASE WHEN pm1.meta_key = '_thumbnail_id' THEN pm1.meta_value END) AS thumbnail_id";
+                            MAX(CASE WHEN pm1.meta_key = '_thumbnail_id' THEN pm1.meta_value END) AS thumbnail_id,
+                            MAX(CASE WHEN pm1.meta_key = '_product_image_gallery' THEN pm1.meta_value END) AS gallery_id";
                     
                     if($yoast_seo_active == true){
                         $product_load_string .=",
@@ -858,7 +865,37 @@ if(is_plugin_actived("yoast-seo", $savedPlugins)){
                         <td class="editable-cell" data-field="id"><?= $product->ID ?></td>
 
                         <!-- Product Thunbnail -->
-                        <td><img src="<?= $thumbnail_url ?>" alt="Thumbnail" class="product-thumb"></td>
+                        <td>
+                            <img src="<?= $thumbnail_url ?>" alt="Thumbnail" class="product-thumb">
+                            <!-- Product editing window -->
+                            <div class="modal fade" id="edit-thumbnail-<?= $product->ID ?>" tabindex="-1" role="dialog" aria-labelledby="ContentLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="ContentLabel"><?= esc_html($product->post_title) ?></h5>
+                                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="thumbnail-container">
+                                                <img src="<?= $thumbnail_url ?>" alt="Thumbnail"  data-image-id="<?= $product->thumbnail_id ?>" class="product-thumb">
+                                                <button id="change-thumb">Change Thumbnail</button>
+                                            </div>
+                                            <div class="gallery-container">
+                                                <div class="gallery-inner-container" data-gallery-ids="<?= $product->gallery_id ?>">
+                                                    
+                                                </div>
+                                                <button id="change-gallery">Change Gallery Photos</button>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary save-thumb-and-gallery" data-bs-dismiss="modal" data-id="<?= $product->ID ?>">Save</button>
+                                        </div>
+                                        </div>
+                                    </div>
+                            </div>
+                        </td>
 
                         <!-- Product Title -->
                         <td class="editable-cell" contenteditable="true" data-field="post_title" data-productid="<?= $product->ID ?>" data-original="<?= esc_attr($product->post_title) ?>"><?= esc_html($product->post_title) ?></td>
